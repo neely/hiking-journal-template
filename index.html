@@ -487,7 +487,7 @@
     const DATA_FILE    = 'hikes.json';
 
     // Base URL for raw assets (images)
-    const ASSET_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/`;
+    const ASSET_BASE = './';
 
     // ── MONTHS ──────────────────────────────────────────────────────────────
     const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -730,7 +730,7 @@
 
     // ── FETCH DATA ───────────────────────────────────────────────────────────
     async function loadJournal() {
-      const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DATA_FILE}?t=${Date.now()}`;
+      const url = `./${DATA_FILE}?t=${Date.now()}`;
       try {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

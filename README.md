@@ -6,18 +6,18 @@ A personal hiking journal template. Phone-first, static, serverless, and free to
 
 ## How It Works
 
-This is a JAMstack site. The "database" is a single file — `hikes.json` — committed directly to the repository. The two HTML pages read from and write to that file using the GitHub REST API, authenticated with a Personal Access Token (PAT) stored in the browser. Cloudflare Pages serves the static files and a custom domain is pointed at it via a CNAME record in Cloudflare DNS.
+This is a JAMstack site. The "database" is a single file — `hikes.json` — committed directly to the repository. `index.html` reads it (and every image path) from the same domain the page itself is served from, so it works whether the repo is public or private. `add.html` writes to it using the GitHub REST API, authenticated with a Personal Access Token (PAT) stored in the browser. Cloudflare Pages serves the static files and a custom domain is pointed at it via a CNAME record in Cloudflare DNS.
 
 ```
 Browser
-  ├── reads  hikes.json  ← raw.githubusercontent.com (public, no auth)
-  └── writes hikes.json  ← api.github.com (requires PAT)
+  ├── reads  hikes.json + images  ← same-origin (served by Cloudflare Pages)
+  └── writes hikes.json           ← api.github.com (requires PAT)
 
 Photos
   └── uploaded to staging/ → GitHub Action resizes & converts → assets/images/
 ```
 
-Because the repo is public, anyone can view the journal. Only someone with the PAT can add, edit, or delete entries.
+By default the repo is public, so anyone can view the journal — only someone with the PAT can add, edit, or delete entries. If you want the journal itself locked down too, see [Going Private](#going-private-optional) below — it's a small amount of extra setup, no code changes required.
 
 ---
 
@@ -81,7 +81,7 @@ All fields except `id`, `trail`, `location`, `state`, and `date` are optional. T
 
 ### `index.html` — The Journal
 
-Fetches `hikes.json` directly from `raw.githubusercontent.com` — no auth required. Entries are sorted newest-first and grouped by year. Each card accordions open to show stats, a swipeable photo gallery, trail notes, and a map image. The year accent color cycles through a fixed palette keyed to the calendar year, so each year always gets the same color regardless of how many years are in the journal.
+Fetches `hikes.json` from the same domain the page is served from — no auth required, and no dependency on the repo being public. Entries are sorted newest-first and grouped by year. Each card accordions open to show stats, a swipeable photo gallery, trail notes, and a map image. The year accent color cycles through a fixed palette keyed to the calendar year, so each year always gets the same color regardless of how many years are in the journal.
 
 A floating `+` button links to `add.html`.
 
@@ -91,7 +91,7 @@ Handles both creating and editing entries. When loaded as `add.html?id={slug}` i
 
 This page requires a PAT to do anything that writes to the repo. On first use a modal prompts for the token and saves it to `localStorage`. It persists across sessions on that device. Any device with the token stored can add or edit entries.
 
-**New entry save flow:** Raw photo files are uploaded to `staging/{slug}/` one at a time, then `hikes.json` is updated with the expected final asset paths. The page then polls `raw.githubusercontent.com` waiting for the GitHub Action to produce the processed WebP files. A processing card shows each image popping in as it becomes available. Once all images are confirmed ready it redirects to the journal. This means the journal is never left pointing at files that do not exist yet.
+**New entry save flow:** Raw photo files are uploaded to `staging/{slug}/` one at a time, then `hikes.json` is updated with the expected final asset paths. The page then polls `SITE_BASE` (your own domain) waiting for the GitHub Action to produce the processed WebP files. A processing card shows each image popping in as it becomes available. Once all images are confirmed ready it redirects to the journal. This means the journal is never left pointing at files that do not exist yet.
 
 **Edit mode save flow — smart diffing to avoid unnecessary Action runs:**
 
@@ -165,7 +165,7 @@ A custom domain is configured by adding a CNAME record in Cloudflare DNS pointin
 
 ### 1. Fork or copy the repo
 
-Create your own repo with the same structure. It can be public or private. If private, note that `index.html` fetches `hikes.json` from `raw.githubusercontent.com`, which requires the repo to be public. If you want a private journal you would need to route the data read through the authenticated API instead.
+Create your own repo with the same structure. It can be public or private — both work out of the box, since `index.html` reads everything from its own domain rather than depending on the repo being public. See [Going Private](#going-private-optional) if you want the locked-down version.
 
 ### 2. Find and replace these values in the code
 
@@ -236,31 +236,27 @@ Upload a photo through `add.html` and confirm the Action runs successfully in th
 
 ---
 
-## Future Enhancement: Private Repo + Cloudflare Zero Trust
+## Going Private (optional)
 
-**Status: not yet implemented — sketched here for a future pass.**
+By default this template is public — anyone can view the journal, and only someone with the PAT can add or edit entries. If you'd rather the whole thing be invite-only, here's the proven setup. **No code changes needed** — `index.html` already reads everything relative to its own domain, so this is entirely a config change on GitHub and Cloudflare.
 
-The current setup (see [Hosting](#hosting) and [PAT](#personal-access-token-pat)) requires the repo to be **public**, because `index.html` reads `hikes.json` straight from `raw.githubusercontent.com` — an unauthenticated, browser-to-GitHub request. If you want a fully private journal (private repo, and only specific people able to view or edit it), here's the actual shape of that change, and a couple of gotchas worth knowing up front:
+1. **Make the repo private** on GitHub (Settings → General → Danger Zone). Writes still go through `api.github.com` with your PAT, which works identically on a private repo — nothing changes there.
+2. **Set up a Cloudflare Access application** on your custom domain: Cloudflare dashboard → Zero Trust → Access → Applications → Add an application, pointed at your custom domain. Allow-list the specific emails who should have access; they'll get a one-time PIN by email to log in.
+3. **Also gate the `*.pages.dev` URL.** Every Cloudflare Pages project gets a free `your-project.pages.dev` subdomain in addition to your custom domain — and it's easy to forget that Access only protects what you've explicitly pointed it at. Add a second Access application (or extend the first) covering the `.pages.dev` domain too, or that URL is an open back door around the whole setup.
+4. **Test it:** an allow-listed email gets in via OTP; a random email is blocked; the journal loads and renders; adding/editing a hike still works.
 
-**Gotcha #1 — Cloudflare Access alone doesn't cover this.** Cloudflare Zero Trust / Access can gate your custom domain behind email + one-time-PIN login. But it only protects requests to *your* domain. The `raw.githubusercontent.com` fetch bypasses your domain entirely (browser → GitHub, direct), so Access has no way to authenticate it. Flip the repo private with Access as the only change, and that fetch just starts failing (401/404) for everyone, logged in or not.
+One tradeoff worth knowing: after saving a new hike, there's a short delay (usually well under a minute) before Cloudflare Pages redeploys and the change is visible — versus near-instant on the public/no-Access setup. For a personal or family journal that's a fine trade.
 
-**Gotcha #2 — GitHub Secrets (Actions secrets) are Actions-only.** They're readable inside a workflow run, never by client-side JS running in a visitor's browser. So they can't be what `index.html` or `add.html` use to authenticate — those pages run on the visitor's device.
+### If you want zero delay and the PAT out of the browser entirely
 
-**The actual fix: a Cloudflare Worker as a GitHub proxy** — the same shape as the Deckhand ITAD proxy. The Worker holds the PAT as a Cloudflare secret (`wrangler secret put GITHUB_PAT`), never shipped to the browser, and:
+There's a further step beyond Access: a Cloudflare Worker that holds the PAT as a server-side secret and proxies every read and write, so the browser never sees the token and there's no redeploy wait. It's a real piece of infrastructure though — worth being clear-eyed about what it costs versus what it buys:
 
-- **Reads** — `index.html` fetches `hikes.json` (and images, if those should be gated too) from the Worker instead of `raw.githubusercontent.com`. The Worker calls the GitHub contents API server-side with the PAT and returns the JSON. Works fine with a private repo.
-- **Writes** — `add.html` POSTs to the Worker instead of calling `api.github.com` directly. The Worker makes the authenticated commit. Bonus: the PAT never touches the browser at all anymore, which is a real improvement over today's paste-into-the-token-modal flow.
+| | Access only (above) | + Cloudflare Worker |
+|---|---|---|
+| Setup | GitHub + Cloudflare dashboard config, no code | Write and deploy a Worker (`wrangler`), rewrite both HTML files' fetch/save logic, manage a Worker secret |
+| PAT location | Browser (password manager) | Never leaves the server |
+| Latency after saving a hike | Short Pages redeploy delay | Instant |
+| Ongoing maintenance | None — it's just config | A small service to keep working across Worker/Wrangler updates |
 
-**Then layer Cloudflare Access on top** of the whole domain (allow-listed emails, OTP) so only invited people can reach the pages in the first place.
-
-Net result: private repo, no PAT in the browser, a specific list of people who can view or edit. It's a genuine rearchitecture of the read/write paths in both HTML files though, not a config toggle — plan for a real work session, not a quick edit.
-
-Rough task list for whenever this gets picked up:
-1. Write the Worker (two routes: `GET /hikes.json`, `POST /commit` or similar) using the existing Deckhand proxy as a starting pattern
-2. `wrangler secret put GITHUB_PAT` on the Worker
-3. Point `index.html`'s fetch at the Worker route instead of `raw.githubusercontent.com`
-4. Rework `add.html`'s save flow to POST to the Worker instead of calling `api.github.com` directly (staging uploads and the `hikes.json` write both move server-side)
-5. Flip the repo to private
-6. Set up a Cloudflare Access application on the custom domain with an allow-list of emails
-7. Test the full loop: Access login → read journal → add a hike → Action processes images → journal updates
+For most personal journals, Access alone covers the actual threat model (repo private, domain gated, PAT scoped to one repo and never public) — the Worker mainly buys convenience, not meaningfully more security. It's a reasonable next step only if the redeploy delay genuinely bothers you in daily use.
 
