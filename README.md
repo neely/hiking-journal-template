@@ -1,6 +1,6 @@
-# Neely Trails — Family Hiking Journal
+# {{SITE_TITLE}} — Hiking Journal Template
 
-A personal family hiking journal. Phone-first, static, serverless, and free to run. No database, no backend, no build step. The entire site is a handful of HTML files and a single JSON file.
+A personal hiking journal template. Phone-first, static, serverless, and free to run. No database, no backend, no build step. The entire site is a handful of HTML files and a single JSON file.
 
 ---
 
@@ -233,3 +233,34 @@ Upload a photo through `add.html` and confirm the Action runs successfully in th
 - **Manual photo reordering** in `add.html` — drag-and-drop on the staged photo list before upload, so you can choose the hero shot explicitly rather than relying on file picker order
 - **A `manifest.json`** to complete the PWA setup if you want the saved home screen icon to behave as a full standalone app
 - **Pagination or a search bar** on `index.html` once the journal grows large enough that scrolling becomes unwieldy
+
+---
+
+## Future Enhancement: Private Repo + Cloudflare Zero Trust
+
+**Status: not yet implemented — sketched here for a future pass.**
+
+The current setup (see [Hosting](#hosting) and [PAT](#personal-access-token-pat)) requires the repo to be **public**, because `index.html` reads `hikes.json` straight from `raw.githubusercontent.com` — an unauthenticated, browser-to-GitHub request. If you want a fully private journal (private repo, and only specific people able to view or edit it), here's the actual shape of that change, and a couple of gotchas worth knowing up front:
+
+**Gotcha #1 — Cloudflare Access alone doesn't cover this.** Cloudflare Zero Trust / Access can gate your custom domain behind email + one-time-PIN login. But it only protects requests to *your* domain. The `raw.githubusercontent.com` fetch bypasses your domain entirely (browser → GitHub, direct), so Access has no way to authenticate it. Flip the repo private with Access as the only change, and that fetch just starts failing (401/404) for everyone, logged in or not.
+
+**Gotcha #2 — GitHub Secrets (Actions secrets) are Actions-only.** They're readable inside a workflow run, never by client-side JS running in a visitor's browser. So they can't be what `index.html` or `add.html` use to authenticate — those pages run on the visitor's device.
+
+**The actual fix: a Cloudflare Worker as a GitHub proxy** — the same shape as the Deckhand ITAD proxy. The Worker holds the PAT as a Cloudflare secret (`wrangler secret put GITHUB_PAT`), never shipped to the browser, and:
+
+- **Reads** — `index.html` fetches `hikes.json` (and images, if those should be gated too) from the Worker instead of `raw.githubusercontent.com`. The Worker calls the GitHub contents API server-side with the PAT and returns the JSON. Works fine with a private repo.
+- **Writes** — `add.html` POSTs to the Worker instead of calling `api.github.com` directly. The Worker makes the authenticated commit. Bonus: the PAT never touches the browser at all anymore, which is a real improvement over today's paste-into-the-token-modal flow.
+
+**Then layer Cloudflare Access on top** of the whole domain (allow-listed emails, OTP) so only invited people can reach the pages in the first place.
+
+Net result: private repo, no PAT in the browser, a specific list of people who can view or edit. It's a genuine rearchitecture of the read/write paths in both HTML files though, not a config toggle — plan for a real work session, not a quick edit.
+
+Rough task list for whenever this gets picked up:
+1. Write the Worker (two routes: `GET /hikes.json`, `POST /commit` or similar) using the existing Deckhand proxy as a starting pattern
+2. `wrangler secret put GITHUB_PAT` on the Worker
+3. Point `index.html`'s fetch at the Worker route instead of `raw.githubusercontent.com`
+4. Rework `add.html`'s save flow to POST to the Worker instead of calling `api.github.com` directly (staging uploads and the `hikes.json` write both move server-side)
+5. Flip the repo to private
+6. Set up a Cloudflare Access application on the custom domain with an allow-list of emails
+7. Test the full loop: Access login → read journal → add a hike → Action processes images → journal updates
+
