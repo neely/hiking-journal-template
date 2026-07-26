@@ -2,6 +2,14 @@
 
 A personal hiking journal template. Phone-first, static, serverless, and free to run. No database, no backend, no build step. The entire site is a handful of HTML files and a single JSON file.
 
+<p float="left">
+  <img src="screenshots/main-page.png" width="260" alt="Journal main page, collapsed card">
+  <img src="screenshots/expanded-hike.png" width="260" alt="Expanded hike card with photo gallery, stats, notes, and map">
+  <img src="screenshots/edit-screen.png" width="260" alt="Edit screen with a hike's fields pre-populated">
+</p>
+
+*Screenshots use the demo entry shipped in this template — Hillary and Norgay's first ascent of Everest, 29 May 1953.*
+
 ---
 
 ## How It Works
