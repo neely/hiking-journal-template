@@ -1,0 +1,22 @@
+{
+  "hikes": [
+    {
+      "id": "everest-summit-may1953",
+      "trail": "Everest Summit — South Col Route",
+      "location": "Khumbu",
+      "state": "Nepal",
+      "date": "1953-05-29",
+      "hikers": ["Edmund Hillary", "Tenzing Norgay"],
+      "stats": {
+        "elevation_gain": 1145,
+        "duration_minutes": 300
+      },
+      "notes": "Departed the final high camp before dawn, climbed the southeast ridge past the South Summit, and worked up the rock step now known as the Hillary Step. Reached the summit at 11:30am — the first confirmed ascent of the mountain. Spent about 15 minutes at the top before starting back down.",
+      "photos": [
+        {"src": "assets/images/1953/everest-summit-may1953/01.webp", "aspect_ratio": 1.676},
+        {"src": "assets/images/1953/everest-summit-may1953/02.webp", "aspect_ratio": 0.818}
+      ],
+      "map": "assets/images/1953/everest-summit-may1953/map.webp"
+    }
+  ]
+}

@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3d2b1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Log a Hike — {{SITE_TITLE}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --bark:       #3d2b1f;
+      --bark-mid:   #6b4c38;
+      --bark-light: #9a7055;
+      --moss:       #3a5a2e;
+      --moss-mid:   #527844;
+      --sage:       #8aab7a;
+      --sage-pale:  #cddfc4;
+      --cream:      #f6f1e9;
+      --cream-dark: #ede5d4;
+      --stone:      #a09285;
+      --ink:        #1e1712;
+      --map-bg:     #e8f0df;
+      --shadow:     rgba(61,43,31,0.10);
+      --danger:     #a03030;
+
+      --YEAR_PALETTE_0: #3a5a2e;
+      --YEAR_PALETTE_1: #6b4c38;
+      --YEAR_PALETTE_2: #4a6c3a;
+      --YEAR_PALETTE_3: #4a5c72;
+      --YEAR_PALETTE_4: #725a4a;
+      --YEAR_PALETTE_5: #5a4a72;
+      --YEAR_PALETTE_6: #3d6b5a;
+      --YEAR_PALETTE_7: #7a5a2e;
+      --YEAR_PALETTE_8: #5a6e3a;
+      --YEAR_PALETTE_9: #6b3a4a;
+    }
+
+    body {
+      background: var(--cream);
+      font-family: 'DM Mono', monospace;
+      color: var(--ink);
+      max-width: 430px;
+      margin: 0 auto;
+      padding-bottom: 120px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      background: var(--bark);
+      padding: 22px 20px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .back-btn {
+      color: var(--sage);
+      font-size: 22px;
+      text-decoration: none;
+      line-height: 1;
+      padding: 2px 0;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+    .header-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--cream);
+      letter-spacing: 0.01em;
+      line-height: 1;
+    }
+    .header-text .sub {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-top: 5px;
+    }
+
+    /* ── FORM SECTIONS ── */
+    .form-section {
+      margin: 18px 12px 0;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 14px var(--shadow), 0 1px 3px var(--shadow);
+    }
+    .section-label {
+      padding: 14px 18px 10px;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--stone);
+      border-bottom: 1px solid var(--cream-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--cream-dark);
+    }
+
+    /* ── FIELD ROWS ── */
+    .field-row { border-bottom: 1px solid var(--cream-dark); }
+    .field-row:last-child { border-bottom: none; }
+
+    .field-row label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--stone);
+      padding: 12px 18px 0;
+    }
+    .field-row input,
+    .field-row textarea,
+    .field-row select {
+      display: block;
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      color: var(--ink);
+      padding: 6px 18px 13px;
+      -webkit-appearance: none;
+      appearance: none;
+      resize: none;
+    }
+    .field-row input::placeholder,
+    .field-row textarea::placeholder { color: var(--stone); opacity: 0.55; }
+    .field-row input:focus,
+    .field-row textarea:focus,
+    .field-row select:focus { background: rgba(58,90,46,0.04); }
+    .field-row textarea { min-height: 100px; line-height: 1.65; font-size: 14px; }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .field-grid .field-row { border-bottom: none; }
+    .field-grid .field-row:first-child { border-right: 1px solid var(--cream-dark); }
+
+    .field-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .field-grid-3 .field-row { border-bottom: none; }
+    .field-grid-3 .field-row:not(:last-child) { border-right: 1px solid var(--cream-dark); }
+
+    /* ── HIKERS TAG INPUT ── */
+    .hikers-wrap {
+      padding: 8px 18px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+      min-height: 50px;
+    }
+    .hiker-tag {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--sage-pale);
+      color: var(--moss);
+      border-radius: 20px;
+      padding: 5px 10px 5px 12px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      animation: tagPop 0.18s ease both;
+    }
+    @keyframes tagPop {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .hiker-tag button {
+      background: none;
+      border: none;
+      color: var(--moss);
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hiker-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      min-width: 80px;
+      flex: 1;
+    }
+    .hiker-input::placeholder { color: var(--stone); opacity: 0.55; }
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-drop-zone {
+      margin: 0 18px 16px;
+      border: 1.5px dashed var(--cream-dark);
+      border-radius: 10px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .photo-drop-zone.drag-over,
+    .photo-drop-zone:active {
+      border-color: var(--moss);
+      background: rgba(58,90,46,0.04);
+    }
+    .photo-drop-zone input[type="file"] { display: none; }
+    .drop-icon {
+      font-size: 28px;
+      opacity: 0.4;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .drop-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--stone);
+      text-transform: uppercase;
+    }
+    .drop-hint {
+      font-size: 10px;
+      color: var(--stone);
+      opacity: 0.6;
+      margin-top: 4px;
+    }
+
+    /* Photo preview list */
+    .photo-list {
+      margin: 0 18px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .photo-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--cream);
+      border-radius: 8px;
+      padding: 7px 10px;
+      animation: fadeUp 0.25s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .photo-thumb {
+      width: 40px; height: 40px;
+      border-radius: 5px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .photo-info { flex: 1; min-width: 0; }
+    .photo-name {
+      font-size: 11px;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .photo-badge {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--moss);
+      margin-top: 2px;
+    }
+    .photo-remove {
+      background: none;
+      border: none;
+      color: var(--stone);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 4px;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+
+    /* Map upload */
+    .map-drop-zone {
+      margin: 0 18px 16px;
+      border: 1.5px dashed var(--cream-dark);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.2s;
+    }
+    .map-drop-zone.has-image { border-color: var(--moss); }
+    .map-drop-zone input[type="file"] { display: none; }
+    .map-drop-placeholder { padding: 20px 16px; text-align: center; }
+    .map-preview {
+      display: none;
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: contain;
+      background: var(--map-bg);
+    }
+    .map-drop-zone.has-image .map-drop-placeholder { display: none; }
+    .map-drop-zone.has-image .map-preview { display: block; }
+    .map-replace-hint {
+      display: none;
+      padding: 7px;
+      text-align: center;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--stone);
+      background: var(--map-bg);
+      border-top: 1px solid var(--cream-dark);
+    }
+    .map-drop-zone.has-image .map-replace-hint { display: block; }
+
+    /* ── SAVE BUTTON ── */
+    .save-btn {
+      display: block;
+      width: calc(100% - 24px);
+      margin: 20px 12px 0;
+      padding: 17px;
+      background: var(--moss);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(58,90,46,0.35);
+      transition: transform 0.14s, box-shadow 0.14s, background 0.14s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .save-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(58,90,46,0.25); }
+    .save-btn:disabled { background: var(--stone); box-shadow: none; cursor: not-allowed; transform: none; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bark);
+      color: var(--cream);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding: 12px 22px;
+      border-radius: 40px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.22s, transform 0.22s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.success { background: var(--moss); }
+    .toast.error   { background: var(--danger); }
+    .toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── PAT MODAL ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(30,23,18,0.7);
+      z-index: 500;
+      display: flex;
+      align-items: flex-end;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+    .modal-sheet {
+      background: var(--cream);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 48px;
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    }
+    .modal-backdrop.open .modal-sheet { transform: translateY(0); }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--cream-dark);
+      border-radius: 2px;
+      margin: 0 auto 22px;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--bark);
+      margin-bottom: 8px;
+    }
+    .modal-desc {
+      font-size: 11px;
+      color: var(--stone);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      letter-spacing: 0.04em;
+    }
+    .modal-input {
+      width: 100%;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+      letter-spacing: 0.04em;
+    }
+    .modal-input:focus { border-color: var(--moss); }
+    .modal-save {
+      margin-top: 14px;
+      width: 100%;
+      padding: 15px;
+      background: var(--moss);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Spinner inside button */
+    .btn-spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Slug preview */
+    .slug-preview {
+      margin: 10px 18px 0;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--stone);
+      min-height: 16px;
+    }
+    .slug-preview span { color: var(--moss); font-weight: 500; }
+
+    /* ── UPLOAD PROGRESS (per-photo during commit) ── */
+    .upload-progress {
+      margin: 0 18px 8px;
+      display: none;
+    }
+    .upload-progress.visible { display: block; }
+    .upload-bar-track {
+      height: 3px;
+      background: var(--cream-dark);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .upload-bar-fill {
+      height: 100%;
+      background: var(--moss);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .upload-bar-label {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--stone);
+    }
+
+    /* ── PROCESSING CARD (post-save, waiting for Action) ── */
+    .proc-card {
+      margin: 20px 12px 0;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 14px var(--shadow), 0 1px 3px var(--shadow);
+    }
+    .proc-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+    .proc-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      color: var(--bark);
+      margin-bottom: 4px;
+    }
+    .proc-subtitle {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone);
+    }
+    /* Image grid: 4 cols, thumbnails pop in as webp becomes available */
+    .proc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 12px 14px;
+    }
+    .proc-cell {
+      aspect-ratio: 1;
+      border-radius: 7px;
+      background: var(--cream-dark);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Pulsing placeholder while waiting */
+    .proc-cell.waiting {
+      animation: cellPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes cellPulse {
+      0%, 100% { background: var(--cream-dark); }
+      50%       { background: #ddd6c8; }
+    }
+    .proc-cell.waiting .cell-label {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: var(--stone);
+      opacity: 0.5;
+    }
+    /* Spinning indicator inside waiting cell */
+    .proc-cell.waiting::after {
+      content: '';
+      position: absolute;
+      bottom: 5px; right: 5px;
+      width: 10px; height: 10px;
+      border: 1.5px solid rgba(160,146,133,0.3);
+      border-top-color: var(--stone);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    /* Done — show actual thumbnail */
+    .proc-cell.done {
+      animation: none;
+      background: var(--ink);
+    }
+    .proc-cell.done::after { display: none; }
+    .proc-cell.done img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      animation: cellPop 0.35s cubic-bezier(0.34,1.4,0.64,1) both;
+    }
+    @keyframes cellPop {
+      from { opacity: 0; transform: scale(0.75); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    /* Map cell spans 2 columns, 4:3 ratio */
+    .proc-cell.map-cell {
+      grid-column: span 2;
+      aspect-ratio: 4/3;
+    }
+    /* Footer */
+    .proc-footer {
+      padding: 10px 18px 16px;
+      border-top: 1px solid var(--cream-dark);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .proc-status-icon {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(160,146,133,0.3);
+      border-top-color: var(--stone);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    .proc-status-icon.done {
+      border: none;
+      animation: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .proc-status-text {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--stone);
+      text-transform: uppercase;
+      flex: 1;
+      line-height: 1.5;
+    }
+    .proc-status-text.ready { color: var(--moss); }
+    .proc-skip {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone);
+      background: none;
+      border: 1px solid var(--cream-dark);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+    .proc-skip:active { background: var(--cream-dark); }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <a class="back-btn" href="index.html" aria-label="Back to journal">‹</a>
+    <div class="header-text">
+      <h1 id="page-title">Log a Hike</h1>
+      <div class="sub" id="page-sub">New entry</div>
+    </div>
+  </header>
+
+  <!-- ── TRAIL INFO ── -->
+  <div class="form-section" id="sec-trail">
+    <div class="section-label">Trail</div>
+
+    <div class="field-row">
+      <label for="trail">Trail Name</label>
+      <input id="trail" type="text" placeholder="Bear Paw Meadows" autocomplete="off" autocorrect="off">
+    </div>
+
+    <div class="field-grid">
+      <div class="field-row">
+        <label for="location">Location</label>
+        <input id="location" type="text" placeholder="Great Smoky Mtns" autocorrect="off">
+      </div>
+      <div class="field-row">
+        <label for="state">State</label>
+        <input id="state" type="text" placeholder="TN" maxlength="2"
+          autocorrect="off" autocapitalize="characters" style="text-transform:uppercase">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <label for="date">Date</label>
+      <input id="date" type="date">
+    </div>
+
+    <div class="slug-preview" id="slug-preview"></div>
+  </div>
+
+  <!-- ── STATS ── -->
+  <div class="form-section">
+    <div class="section-label">Stats</div>
+    <div class="field-grid-3">
+      <div class="field-row">
+        <label for="miles">Miles</label>
+        <input id="miles" type="number" placeholder="4.2" step="0.1" min="0" inputmode="decimal">
+      </div>
+      <div class="field-row">
+        <label for="elev">Elev Gain (ft)</label>
+        <input id="elev" type="number" placeholder="1200" step="10" min="0" inputmode="numeric">
+      </div>
+      <div class="field-row">
+        <label for="duration">Duration (min)</label>
+        <input id="duration" type="number" placeholder="180" step="5" min="0" inputmode="numeric">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NOTES ── -->
+  <div class="form-section">
+    <div class="section-label">Trail Notes</div>
+    <div class="field-row" style="border-bottom:none">
+      <label for="notes">Notes</label>
+      <textarea id="notes" placeholder="The upper meadow was spectacular in early morning light…"></textarea>
+    </div>
+  </div>
+
+  <!-- ── HIKERS ── -->
+  <div class="form-section">
+    <div class="section-label">Hikers</div>
+    <div class="field-row" style="border-bottom:none; padding-bottom:0;">
+      <label>Who came along?</label>
+      <div class="hikers-wrap" id="hikers-wrap">
+        <input class="hiker-input" id="hiker-input" type="text"
+          placeholder="Type a name, press Enter" autocorrect="off">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PHOTOS ── -->
+  <div class="form-section">
+    <div class="section-label">Photos</div>
+
+    <div class="photo-list" id="photo-list"></div>
+
+    <!-- Upload progress bar (shown during save) -->
+    <div class="upload-progress" id="upload-progress">
+      <div class="upload-bar-track">
+        <div class="upload-bar-fill" id="upload-bar-fill"></div>
+      </div>
+      <div class="upload-bar-label" id="upload-bar-label">Uploading…</div>
+    </div>
+
+    <!--
+      iOS Safari fix: explicit MIME types instead of image/* enable multi-select.
+      accept="image/jpeg,image/png,image/heic,image/heif,image/gif,image/webp"
+      combined with multiple allows picking several photos at once from the
+      photo library on iPhone (iOS 14+).
+    -->
+    <div class="photo-drop-zone" id="photo-drop"
+         onclick="document.getElementById('photo-file').click()">
+      <input type="file" id="photo-file"
+             accept="image/jpeg,image/png,image/heic,image/heif,image/gif,image/webp"
+             multiple>
+      <span class="drop-icon">📷</span>
+      <div class="drop-label">Add Photos</div>
+      <div class="drop-hint">First photo becomes the hero image</div>
+    </div>
+  </div>
+
+  <!-- ── MAP ── -->
+  <div class="form-section">
+    <div class="section-label">Trail Map</div>
+
+    <div class="map-drop-zone" id="map-drop"
+         onclick="document.getElementById('map-file').click()">
+      <input type="file" id="map-file"
+             accept="image/jpeg,image/png,image/heic,image/heif,image/gif,image/webp">
+      <div class="map-drop-placeholder">
+        <span class="drop-icon">🗺️</span>
+        <div class="drop-label">Add Map Image</div>
+        <div class="drop-hint">Screenshot from AllTrails, Gaia GPS, etc.</div>
+      </div>
+      <img class="map-preview" id="map-preview" alt="Map preview">
+      <div class="map-replace-hint">Tap to replace</div>
+    </div>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="saveHike()">Save Hike</button>
+
+  <!-- Delete button (edit mode only) -->
+  <button class="save-btn" id="delete-btn"
+    onclick="deleteHike()"
+    style="display:none; margin-top:12px; background:transparent; color:var(--danger);
+           border:1.5px solid var(--danger); box-shadow:none;">
+    Delete This Hike
+  </button>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- PAT Modal -->
+  <div class="modal-backdrop" id="pat-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">GitHub Access Token</div>
+      <div class="modal-desc">
+        A Personal Access Token with <strong>repo</strong> scope is required to save hikes.<br><br>
+        It's stored only in your browser's local storage and never sent anywhere except GitHub.
+      </div>
+      <input class="modal-input" id="pat-input" type="password"
+             placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+      <button class="modal-save" onclick="savePAT()">Save Token</button>
+    </div>
+  </div>
+
+  <script>
+    // ── CONFIG ──────────────────────────────────────────────────────────────
+    const GITHUB_USER   = '{{GITHUB_USER}}';
+    const GITHUB_REPO   = '{{GITHUB_REPO}}';
+    const GITHUB_BRANCH = 'main';
+    const DATA_FILE     = 'hikes.json';
+    const API_BASE      = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}`;
+    const SITE_BASE     = '{{SITE_BASE_URL}}'; // your custom domain or Pages URL — no trailing slash
+
+    // ── YEAR PALETTE ─────────────────────────────────────────────────────────
+    const YEAR_PALETTE = [
+      '#3a5a2e','#6b4c38','#4a6c3a','#4a5c72',
+      '#725a4a','#5a4a72','#3d6b5a','#7a5a2e',
+      '#5a6e3a','#6b3a4a',
+    ];
+    function yearColor(y) {
+      const idx = ((y - 2012) % YEAR_PALETTE.length + YEAR_PALETTE.length) % YEAR_PALETTE.length;
+      return YEAR_PALETTE[idx];
+    }
+
+    // ── PAT MANAGEMENT ───────────────────────────────────────────────────────
+    function getPAT() { return localStorage.getItem('gh_pat') || ''; }
+    function savePAT() {
+      const val = document.getElementById('pat-input').value.trim();
+      if (!val) return;
+      localStorage.setItem('gh_pat', val);
+      closePATModal();
+      showToast('Token saved', 'success');
+    }
+    function openPATModal() {
+      const m = document.getElementById('pat-modal');
+      m.classList.add('open');
+      setTimeout(() => document.getElementById('pat-input').focus(), 350);
+    }
+    function closePATModal() {
+      document.getElementById('pat-modal').classList.remove('open');
+    }
+    document.getElementById('pat-modal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closePATModal();
+    });
+    document.getElementById('pat-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') savePAT();
+    });
+
+    // ── TOAST ────────────────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (type ? ' ' + type : '');
+      requestAnimationFrame(() => t.classList.add('show'));
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── SLUG ─────────────────────────────────────────────────────────────────
+    const MONTHS_SHORT = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    function makeSlug(trail, dateStr) {
+      if (!trail || !dateStr) return '';
+      const d   = new Date(dateStr + 'T12:00:00');
+      const mon = MONTHS_SHORT[d.getMonth()];
+      const yr  = d.getFullYear();
+      const trailPart = trail
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+      return `${trailPart}-${mon}${yr}`;
+    }
+
+    function updateSlugPreview() {
+      const slug = makeSlug(
+        document.getElementById('trail').value,
+        document.getElementById('date').value
+      );
+      const el = document.getElementById('slug-preview');
+      el.innerHTML = slug ? `Slug: <span>${slug}</span>` : '';
+    }
+    document.getElementById('trail').addEventListener('input', updateSlugPreview);
+    document.getElementById('date').addEventListener('change', updateSlugPreview);
+
+    (function setDefaultDate() {
+      const today = new Date();
+      document.getElementById('date').value = today.toISOString().split('T')[0];
+      updateSlugPreview();
+    })();
+
+    // ── HIKERS TAG INPUT ─────────────────────────────────────────────────────
+    let hikers = [];
+    const hikerInput = document.getElementById('hiker-input');
+    const hikersWrap = document.getElementById('hikers-wrap');
+
+    function addHiker(name) {
+      name = name.trim();
+      if (!name || hikers.includes(name)) return;
+      hikers.push(name);
+      renderHikerTags();
+    }
+    function removeHiker(name) {
+      hikers = hikers.filter(h => h !== name);
+      renderHikerTags();
+    }
+    function renderHikerTags() {
+      hikersWrap.querySelectorAll('.hiker-tag').forEach(t => t.remove());
+      hikers.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'hiker-tag';
+        tag.innerHTML = `${name}<button onclick="removeHiker('${name.replace(/'/g,"\\'")}')">×</button>`;
+        hikersWrap.insertBefore(tag, hikerInput);
+      });
+    }
+    hikerInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        addHiker(hikerInput.value);
+        hikerInput.value = '';
+      } else if (e.key === 'Backspace' && hikerInput.value === '' && hikers.length) {
+        removeHiker(hikers[hikers.length - 1]);
+      }
+    });
+    hikerInput.addEventListener('blur', () => {
+      if (hikerInput.value.trim()) { addHiker(hikerInput.value); hikerInput.value = ''; }
+    });
+    hikersWrap.addEventListener('click', () => hikerInput.focus());
+
+    // ── PHOTO MANAGEMENT ─────────────────────────────────────────────────────
+    let photoFiles = []; // [{file, datetime}] sorted by EXIF DateTimeOriginal
+
+    // Parse EXIF DateTimeOriginal (tag 0x9003) from first 128KB of file.
+    // Returns "YYYY:MM:DD HH:MM:SS" or null.
+    function readExifDatetime(file) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          try {
+            const view = new DataView(e.target.result);
+            if (view.getUint16(0) !== 0xFFD8) { resolve(null); return; }
+            let offset = 2;
+            while (offset < view.byteLength - 4) {
+              const marker = view.getUint16(offset);
+              const len    = view.getUint16(offset + 2);
+              if (marker === 0xFFE1) {
+                const exifHeader = String.fromCharCode(
+                  view.getUint8(offset+4), view.getUint8(offset+5),
+                  view.getUint8(offset+6), view.getUint8(offset+7)
+                );
+                if (exifHeader !== 'Exif') { resolve(null); return; }
+                const tiffStart = offset + 10;
+                const le = view.getUint16(tiffStart) === 0x4949;
+                const getU16 = o => view.getUint16(tiffStart + o, le);
+                const getU32 = o => view.getUint32(tiffStart + o, le);
+                const ifd0 = getU32(4);
+                const ifd0Count = getU16(ifd0);
+                let exifIFDOffset = null;
+                for (let i = 0; i < ifd0Count; i++) {
+                  const ep = ifd0 + 2 + i * 12;
+                  if (getU16(ep) === 0x8769) { exifIFDOffset = getU32(ep + 8); break; }
+                }
+                const searchIFD = ifdOffset => {
+                  if (ifdOffset == null) return null;
+                  const count = getU16(ifdOffset);
+                  for (let i = 0; i < count; i++) {
+                    const ep = ifdOffset + 2 + i * 12;
+                    if (getU16(ep) === 0x9003) {
+                      const valOffset = getU32(ep + 8);
+                      let str = '';
+                      for (let c = 0; c < 19; c++)
+                        str += String.fromCharCode(view.getUint8(tiffStart + valOffset + c));
+                      return str;
+                    }
+                  }
+                  return null;
+                };
+                resolve(searchIFD(ifd0) || searchIFD(exifIFDOffset) || null);
+                return;
+              }
+              if (marker === 0xFFDA) break;
+              offset += 2 + len;
+            }
+            resolve(null);
+          } catch (_) { resolve(null); }
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsArrayBuffer(file.slice(0, 131072));
+      });
+    }
+
+    function renderPhotoList() {
+      const list = document.getElementById('photo-list');
+      list.innerHTML = '';
+      photoFiles.forEach((entry, i) => {
+        const url  = URL.createObjectURL(entry.file);
+        const item = document.createElement('div');
+        item.className = 'photo-item';
+        const timeLabel = entry.datetime
+          ? entry.datetime.slice(0,16).replace(':','-').replace(':','-')
+          : 'no timestamp';
+        item.innerHTML = `
+          <img class="photo-thumb" src="${url}" alt="">
+          <div class="photo-info">
+            <div class="photo-name">${entry.file.name}</div>
+            <div class="photo-badge">${i === 0 ? '★ Hero · ' : ''}${timeLabel}</div>
+          </div>
+          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    async function addPhotoFiles(files) {
+      const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+      // Read EXIF for all files in parallel
+      const datetimes = await Promise.all(arr.map(f => readExifDatetime(f)));
+      const incoming  = arr.map((file, i) => ({ file, datetime: datetimes[i] }));
+      photoFiles = [...photoFiles, ...incoming];
+      photoFiles.sort((a, b) => {
+        if (a.datetime && b.datetime) return a.datetime < b.datetime ? -1 : 1;
+        if (a.datetime) return -1;
+        if (b.datetime) return 1;
+        return 0;
+      });
+      renderPhotoList();
+    }
+
+    function removePhoto(i) {
+      photoFiles.splice(i, 1);
+      renderPhotoList();
+    }
+
+    document.getElementById('photo-file').addEventListener('change', e => {
+      if (e.target.files.length) addPhotoFiles(e.target.files);
+      e.target.value = '';
+    });
+
+    const photoDrop = document.getElementById('photo-drop');
+    photoDrop.addEventListener('dragover',  e => { e.preventDefault(); photoDrop.classList.add('drag-over'); });
+    photoDrop.addEventListener('dragleave', ()  => photoDrop.classList.remove('drag-over'));
+    photoDrop.addEventListener('drop', e => {
+      e.preventDefault();
+      photoDrop.classList.remove('drag-over');
+      addPhotoFiles(e.dataTransfer.files);
+    });
+
+    // ── MAP IMAGE ────────────────────────────────────────────────────────────
+    let mapFile = null;
+
+    document.getElementById('map-file').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      mapFile = f;
+      document.getElementById('map-preview').src = URL.createObjectURL(f);
+      document.getElementById('map-drop').classList.add('has-image');
+      e.target.value = '';
+    });
+
+    // ── GITHUB API HELPERS ───────────────────────────────────────────────────
+    async function ghHeaders() {
+      const pat = getPAT();
+      if (!pat) throw new Error('NO_PAT');
+      return {
+        'Authorization': `token ${pat}`,
+        'Content-Type':  'application/json',
+        'Accept':        'application/vnd.github.v3+json',
+      };
+    }
+
+    async function ghGetFile(path) {
+      const headers = await ghHeaders();
+      const res = await fetch(`${API_BASE}/contents/${path}?ref=${GITHUB_BRANCH}`, { headers });
+      if (res.status === 404) return { sha: null, content: null };
+      if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
+      const data = await res.json();
+      return { sha: data.sha, content: atob(data.content.replace(/\n/g, '')) };
+    }
+
+    async function ghPutFile(path, contentBase64, sha, message) {
+      const headers = await ghHeaders();
+      const body = { message, content: contentBase64, branch: GITHUB_BRANCH };
+      if (sha) body.sha = sha;
+      const res = await fetch(`${API_BASE}/contents/${path}`, {
+        method: 'PUT', headers, body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
+      return res.json();
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function zeroPad(n, width = 2) { return String(n).padStart(width, '0'); }
+
+    // ── UPLOAD PROGRESS HELPERS ──────────────────────────────────────────────
+    function showUploadProgress(current, total, label) {
+      const wrap  = document.getElementById('upload-progress');
+      const fill  = document.getElementById('upload-bar-fill');
+      const lbl   = document.getElementById('upload-bar-label');
+      wrap.classList.add('visible');
+      fill.style.width = `${Math.round((current / total) * 100)}%`;
+      lbl.textContent  = label;
+    }
+    function hideUploadProgress() {
+      document.getElementById('upload-progress').classList.remove('visible');
+    }
+
+    // ── PROCESSING CARD (waits for GitHub Action → webp files live) ──────────
+    //
+    // Shows a grid of cells — one per photo + one for map.
+    // Each cell starts as an animated placeholder, then "pops" in with
+    // the actual webp thumbnail once a HEAD request returns 200.
+    // Probes every POLL_INTERVAL ms, gives up after MAX_WAIT ms.
+    //
+    async function showProcessingCard(slug, year, photoPaths, hasMap) {
+      // Hide action buttons
+      document.getElementById('save-btn').style.display   = 'none';
+      document.getElementById('delete-btn').style.display = 'none';
+      hideUploadProgress();
+
+      const total = photoPaths.length + (hasMap ? 1 : 0);
+
+      // ── Build card ──
+      const card = document.createElement('div');
+      card.id = 'proc-card';
+      card.className = 'proc-card';
+
+      // Header
+      card.innerHTML = `
+        <div class="proc-header">
+          <div class="proc-title">Hike Saved 🌲</div>
+          <div class="proc-subtitle" id="proc-subtitle">
+            GitHub Action converting ${total} image${total !== 1 ? 's' : ''} to WebP…
+          </div>
+        </div>
+      `;
+
+      // Grid
+      const grid = document.createElement('div');
+      grid.className = 'proc-grid';
+
+      // One cell per photo
+      const photoCells = photoPaths.map((_, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'proc-cell waiting';
+        cell.innerHTML = `<span class="cell-label">${zeroPad(i+1)}</span>`;
+        grid.appendChild(cell);
+        return cell;
+      });
+
+      // Map cell (wider)
+      let mapCellEl = null;
+      if (hasMap) {
+        mapCellEl = document.createElement('div');
+        mapCellEl.className = 'proc-cell map-cell waiting';
+        mapCellEl.innerHTML = `<span class="cell-label">map</span>`;
+        grid.appendChild(mapCellEl);
+      }
+      card.appendChild(grid);
+
+      // Footer
+      const footer = document.createElement('div');
+      footer.className = 'proc-footer';
+      footer.innerHTML = `
+        <div class="proc-status-icon" id="proc-icon"></div>
+        <div class="proc-status-text" id="proc-status">Waiting for action to start…</div>
+        <button class="proc-skip" onclick="window.location.href='index.html'">Skip →</button>
+      `;
+      card.appendChild(footer);
+
+      // Insert after delete button and scroll into view
+      document.getElementById('delete-btn').insertAdjacentElement('afterend', card);
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+
+      // ── Probe loop ──
+      const POLL_INTERVAL = 5000;  // 5s between rounds
+      const MAX_WAIT      = 360000; // 6 min absolute ceiling
+      const start         = Date.now();
+
+      // Build probe list — bust CDN cache with timestamp param
+      const probes = photoPaths.map((p, i) => ({
+        path: p,
+        cell: photoCells[i],
+        done: false,
+        isMap: false,
+      }));
+      if (hasMap && mapCellEl) {
+        probes.push({
+          path:  `assets/images/${year}/${slug}/map.webp`,
+          cell:  mapCellEl,
+          done:  false,
+          isMap: true,
+        });
+      }
+
+      let readyCount = 0;
+
+      async function probeOne(probe) {
+        if (probe.done) return;
+        const url = `${SITE_BASE}/${probe.path}?v=${Date.now()}`;
+        try {
+          const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+          if (res.ok) {
+            probe.done = true;
+            readyCount++;
+
+            // Swap to actual image thumbnail
+            const isMapCell = probe.isMap;
+            probe.cell.className = 'proc-cell done' + (isMapCell ? ' map-cell' : '');
+            const img = new Image();
+            img.src = url;
+            probe.cell.innerHTML = '';
+            probe.cell.appendChild(img);
+
+            // Update subtitle count
+            const subtitleEl = document.getElementById('proc-subtitle');
+            if (subtitleEl) {
+              subtitleEl.textContent = readyCount === total
+                ? `All ${total} image${total !== 1 ? 's' : ''} ready!`
+                : `${readyCount} of ${total} images ready…`;
+            }
+          }
+        } catch (_) { /* network blip, retry next round */ }
+      }
+
+      // Main wait loop
+      while (Date.now() - start < MAX_WAIT) {
+        const pending = probes.filter(p => !p.done);
+        if (!pending.length) break;
+
+        await Promise.all(pending.map(probeOne));
+
+        if (probes.every(p => p.done)) break;
+
+        // Update footer status with elapsed time
+        const elapsed = Math.round((Date.now() - start) / 1000);
+        const remaining = total - readyCount;
+        const statusEl = document.getElementById('proc-status');
+        if (statusEl) {
+          statusEl.textContent = `${remaining} image${remaining !== 1 ? 's' : ''} still converting… (${elapsed}s)`;
+        }
+
+        await new Promise(r => setTimeout(r, POLL_INTERVAL));
+      }
+
+      // ── All done (or timed out) ──
+      const allReady  = probes.every(p => p.done);
+      const iconEl    = document.getElementById('proc-icon');
+      const statusEl  = document.getElementById('proc-status');
+
+      if (iconEl) {
+        iconEl.className = 'proc-status-icon done';
+        iconEl.textContent = allReady ? '✓' : '→';
+      }
+      if (statusEl) {
+        statusEl.className = 'proc-status-text' + (allReady ? ' ready' : '');
+        statusEl.textContent = allReady
+          ? 'All images ready — heading to journal…'
+          : 'Still processing — redirecting now…';
+      }
+
+      await new Promise(r => setTimeout(r, allReady ? 1200 : 2000));
+      window.location.href = 'index.html';
+    }
+
+    // ── BUILD HIKE OBJECT ────────────────────────────────────────────────────
+    function buildHikeObject(slug, year, photoPaths, mapPath) {
+      const trail    = document.getElementById('trail').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const state    = document.getElementById('state').value.trim().toUpperCase();
+      const date     = document.getElementById('date').value;
+      const milesVal = parseFloat(document.getElementById('miles').value)    || null;
+      const elevVal  = parseInt(document.getElementById('elev').value)       || null;
+      const durVal   = parseInt(document.getElementById('duration').value)   || null;
+      const notes    = document.getElementById('notes').value.trim() || null;
+
+      const hike = {
+        id: slug, trail, location, state, date,
+        stats: {
+          miles:            milesVal,
+          elevation_gain:   elevVal,
+          duration_minutes: durVal,
+        },
+        hikers: hikers.length ? hikers : undefined,
+        notes:  notes         || undefined,
+        photos: photoPaths.length ? photoPaths : undefined,
+        map:    mapPath        || undefined,
+      };
+
+      // Strip undefined / null stats keys
+      Object.keys(hike).forEach(k => hike[k] === undefined && delete hike[k]);
+      Object.keys(hike.stats).forEach(k => hike.stats[k] == null && delete hike.stats[k]);
+      return hike;
+    }
+
+    // ── UPLOAD PHOTOS + MAP → staging/ ───────────────────────────────────────
+    async function uploadStagingFiles(slug, year) {
+      const photoPaths = [];
+      const photoTotal = photoFiles.length + (mapFile ? 1 : 0);
+      let   uploaded   = 0;
+
+      for (let i = 0; i < photoFiles.length; i++) {
+        const b64  = await fileToBase64(photoFiles[i].file);
+        const num  = zeroPad(i + 1, 2);
+        const ext  = (photoFiles[i].file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `staging/${slug}/${num}.${ext}`;
+        uploaded++;
+        showUploadProgress(uploaded, photoTotal,
+          `Uploading photo ${uploaded} of ${photoTotal}…`);
+        await ghPutFile(path, b64, null, `Add staging photo ${num} for ${slug}`);
+        photoPaths.push(`assets/images/${year}/${slug}/${num}.webp`);
+      }
+
+      let mapPath = null;
+      if (mapFile) {
+        const b64  = await fileToBase64(mapFile);
+        const path = `staging/${slug}/map.jpg`;
+        uploaded++;
+        showUploadProgress(uploaded, photoTotal, `Uploading map…`);
+        await ghPutFile(path, b64, null, `Add staging map for ${slug}`);
+        mapPath = `assets/images/${year}/${slug}/map.webp`;
+      }
+
+      return { photoPaths, mapPath };
+    }
+
+    // ── SAVE HIKE (new) ──────────────────────────────────────────────────────
+    async function saveHike() {
+      if (EDIT_ID) return saveHikeEdit();
+
+      const trail    = document.getElementById('trail').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const state    = document.getElementById('state').value.trim().toUpperCase();
+      const date     = document.getElementById('date').value;
+
+      if (!trail)    { showToast('Trail name is required', 'error'); return; }
+      if (!location) { showToast('Location is required',   'error'); return; }
+      if (!state)    { showToast('State is required',      'error'); return; }
+      if (!date)     { showToast('Date is required',       'error'); return; }
+      if (!getPAT()) { openPATModal(); return; }
+
+      const slug = makeSlug(trail, date);
+      const year = new Date(date + 'T12:00:00').getFullYear();
+
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-spinner"></span>Saving…';
+
+      try {
+        // 1. Upload files to staging/
+        const { photoPaths, mapPath } = await uploadStagingFiles(slug, year);
+
+        // 2. Write hikes.json
+        showUploadProgress(1, 1, 'Updating journal…');
+        const { sha, content } = await ghGetFile(DATA_FILE);
+        const hikeData = content ? JSON.parse(content) : { hikes: [] };
+        if (!Array.isArray(hikeData.hikes)) hikeData.hikes = [];
+        hikeData.hikes.push(buildHikeObject(slug, year, photoPaths, mapPath));
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(hikeData, null, 2))));
+        await ghPutFile(DATA_FILE, encoded, sha, `Add hike: ${trail} (${date})`);
+
+        // 3. Show processing card — wait for Action to produce webp files
+        await showProcessingCard(slug, year, photoPaths, !!mapPath);
+
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = 'Save Hike';
+        hideUploadProgress();
+        if (err.message === 'NO_PAT') openPATModal();
+        else showToast('Save failed — check token & connection', 'error');
+      }
+    }
+
+    // ── EDIT MODE ────────────────────────────────────────────────────────────
+    const EDIT_ID   = new URLSearchParams(window.location.search).get('id');
+    let   EDIT_HIKE = null;
+
+    async function loadEditMode() {
+      document.getElementById('page-title').textContent  = 'Edit Hike';
+      document.getElementById('page-sub').textContent    = 'Update entry';
+      document.getElementById('save-btn').textContent    = 'Update Hike';
+      document.getElementById('delete-btn').style.display = 'block';
+
+      try {
+        const { content } = await ghGetFile(DATA_FILE);
+        if (!content) { showToast('Could not load journal data', 'error'); return; }
+        const hikeData = JSON.parse(content);
+        const hike     = (hikeData.hikes || []).find(h => h.id === EDIT_ID);
+        if (!hike) { showToast('Hike not found: ' + EDIT_ID, 'error'); return; }
+        EDIT_HIKE = hike;
+
+        document.getElementById('trail').value    = hike.trail    || '';
+        document.getElementById('location').value = hike.location || '';
+        document.getElementById('state').value    = hike.state    || '';
+        document.getElementById('date').value     = hike.date     || '';
+        document.getElementById('miles').value    = hike.stats?.miles            ?? '';
+        document.getElementById('elev').value     = hike.stats?.elevation_gain   ?? '';
+        document.getElementById('duration').value = hike.stats?.duration_minutes ?? '';
+        document.getElementById('notes').value    = hike.notes    || '';
+
+        if (Array.isArray(hike.hikers)) hike.hikers.forEach(addHiker);
+
+        if (hike.photos?.length) {
+          const list = document.getElementById('photo-list');
+          const note = document.createElement('div');
+          note.style.cssText = 'padding:10px 18px 2px; font-size:10px; letter-spacing:0.1em; color:var(--stone); text-transform:uppercase;';
+          note.textContent = `${hike.photos.length} existing photo${hike.photos.length > 1 ? 's' : ''} — upload new to replace`;
+          list.appendChild(note);
+        }
+
+        updateSlugPreview();
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to load hike', 'error');
+      }
+    }
+
+    // ── SAVE HIKE (edit) ─────────────────────────────────────────────────────
+    async function saveHikeEdit() {
+      const trail    = document.getElementById('trail').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const state    = document.getElementById('state').value.trim().toUpperCase();
+      const date     = document.getElementById('date').value;
+
+      if (!trail)    { showToast('Trail name is required', 'error'); return; }
+      if (!location) { showToast('Location is required',   'error'); return; }
+      if (!state)    { showToast('State is required',      'error'); return; }
+      if (!date)     { showToast('Date is required',       'error'); return; }
+      if (!getPAT()) { openPATModal(); return; }
+
+      const slug = EDIT_ID; // keep original slug
+      const year = new Date(date + 'T12:00:00').getFullYear();
+
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-spinner"></span>Saving…';
+
+      try {
+        let photoPaths = EDIT_HIKE?.photos ? [...EDIT_HIKE.photos] : [];
+        let mapPath    = EDIT_HIKE?.map    || null;
+        let hasNewMedia = false;
+
+        if (photoFiles.length > 0) {
+          hasNewMedia = true;
+          photoPaths  = [];
+          const { photoPaths: pp, mapPath: mp } = await uploadStagingFiles(slug, year);
+          photoPaths = pp;
+          if (mp) { mapPath = mp; }
+        } else if (mapFile) {
+          hasNewMedia = true;
+          const { mapPath: mp } = await uploadStagingFiles(slug, year);
+          if (mp) mapPath = mp;
+        }
+
+        // Write hikes.json
+        showUploadProgress(1, 1, 'Updating journal…');
+        const { sha, content } = await ghGetFile(DATA_FILE);
+        const hikeData = JSON.parse(content);
+        const idx = hikeData.hikes.findIndex(h => h.id === EDIT_ID);
+        const updatedHike = buildHikeObject(slug, year, photoPaths, mapPath);
+        if (idx === -1) hikeData.hikes.push(updatedHike);
+        else            hikeData.hikes[idx] = updatedHike;
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(hikeData, null, 2))));
+        await ghPutFile(DATA_FILE, encoded, sha, `Update hike: ${trail} (${date})`);
+
+        if (hasNewMedia) {
+          // New images were staged — wait for Action
+          await showProcessingCard(slug, year, photoPaths, !!mapPath);
+        } else {
+          // No new images — safe to redirect immediately
+          showToast('Hike updated! 🌲', 'success');
+          btn.textContent = 'Updated ✓';
+          hideUploadProgress();
+          setTimeout(() => { window.location.href = 'index.html'; }, 1600);
+        }
+
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = 'Update Hike';
+        hideUploadProgress();
+        if (err.message === 'NO_PAT') openPATModal();
+        else showToast('Save failed — check token & connection', 'error');
+      }
+    }
+
+    // ── DELETE HIKE ──────────────────────────────────────────────────────────
+    async function deleteHike() {
+      if (!EDIT_HIKE) return;
+      if (!confirm(`Delete "${EDIT_HIKE.trail}"? This cannot be undone.`)) return;
+      if (!getPAT()) { openPATModal(); return; }
+
+      const btn = document.getElementById('delete-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-spinner"></span>Deleting…';
+
+      try {
+        const { sha, content } = await ghGetFile(DATA_FILE);
+        const hikeData = JSON.parse(content);
+        hikeData.hikes = hikeData.hikes.filter(h => h.id !== EDIT_ID);
+        const updated = btoa(unescape(encodeURIComponent(JSON.stringify(hikeData, null, 2))));
+        await ghPutFile(DATA_FILE, updated, sha, `Delete hike: ${EDIT_HIKE.trail}`);
+        showToast('Hike deleted', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1600);
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = 'Delete This Hike';
+        if (err.message === 'NO_PAT') openPATModal();
+        else showToast('Delete failed', 'error');
+      }
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────────────────
+    if (EDIT_ID) loadEditMode();
+  </script>
+
+</body>
+</html>

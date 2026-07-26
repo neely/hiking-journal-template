@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3d2b1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- ── APP ICON & PWA META ─────────────────────────────────────────────── -->
+
+<!-- Favicon (browser tab) -->
+<link rel="icon" type="image/png" sizes="180x180"
+      href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAABmJLR0QA/wD/AP+gvaeTAAAU/ElEQVR4nO2de3hU1bnG37VmJ0BCQu4XEzBEEJBcCAEkCQSsnlaPWvHUPoUgoH2qz2m13srRXsTS2vqcqmjFWp9a62kpRD14iraWaqsSDCFchJBMIkkIJCEhCbnNJCGBzGWv80eSIffMntveM/P9/pF3z15rf7NZfryz9lrfZlCR7E1pMVxISzlnCyxW8/UQWCDppFgBEWy1WsMABEs6KRAALFYLAEDSSSCtpg64woAus9VsBNAlcalBMFYmC/MpIetKD+eX1ENFJE9eLPPBzKAQE74qrPiK2WpeCytSuA4MQgDi6nkMzJNhEYoQ0wUwHUAsAIBhBYP4hpABwIrVm5ae54J9aBaWD7pMloKKvRUmT0bn/pGzHXxVzZJcWRZbAPENACFuvyahEUQ3wPbIVvnVI++Wn/bEFd02oNfelzTd1B/6bcGwlQFz3XUdwisQAPuEQf51Ub5+vzsv5PIBnflgZlDQFfGQ1WJ+HGDx6ns+0prSkvQ5s8pbD+45dRxugLuys+y81LuCLstfMoHnARbvyr4JH0EgV3B+NCcvbU/O+oxrXN29SzL0yvVLkjiXXwVwhyv6I/yGTgAPHc4ve8dVHTo9oLM3pt0DgTcBzHJBPIR/8q4wW79XvLei09mOHB7Qt902b1pXeNDzkk56BNCQRyPtrbpB5lh3ZHfZSTiBQx56xeaFkV3hQQUAHnHm4gQxjNlcRsFNW5Z93ZlOFGfo3PUpsy06/jEEFjlzYYKYAJlBbC3K17/sSGOdkpOzNqQuFJwXALjOkYsRhB0wgH1tTlqsqUF/8ZDSxnYP6KzN6QlM4ICkk+ZwziEPPOuEpJNAmrTLtSzfPDs1Fg36iwdHj8XJsMtDr9i8MJJZxb8AXKukc4Jwku25mzOeUtJgSg89OJtRAGClo1ERhBPIAmJ9cb5+rz0nT5mhu8ODd4AGM6EenIHtyt6QmmXPyZNm6OyNafdIXNoLaGKekrR/64s6HpBRuPtEMyZhwgy9cv2SpMEngAShBWJl2bwL2yd3FRNm6Ky8tL8y4E7Xx0UQTsDEU4f36J+f8OPxDmbnpd4FsPfdFxVBOIxZyOzG4ndKS8b7cEz6znwwM0ink14Z0pJOsvkY0qQ1oAOkAN3rE1mPMQdnXhYPMzCabyY0CwNuzKlK+/YEn11l7X1J002mkHO0OJ/wAtqF2bpg9JLTERna1B/6bRrMhJcQxQJ1T4w+eHVAbwcXDFs14JFIk7ZPC/H9rG8ujsAwbAM6pzp9De3OJrwLFho4Y/pjI44M/SE7L/UtgN3v+aAIwikMwhycULy3+DIwmKGzvpk1A2D/oW5cBOEQ4Tzgkm3sSgAwLdj0NZNpYJPrkD/RwLN7n9XxUXFYNPcG3JC8CImxsxEXGYuZM4IRND0YANB3pReXLveiub0FTW0XUFlbiVPVpWhub9ZE/FrTAuI7APYAgwNaWPEVEG4lNDgUt+bciltW3IzkhORJz50ZFIKZQSGIi4xDxoIluH3V7QCAcxfO4sDxAnx0+CMYeoyeCNsrYGBrVuWlJh/K159jAJCdl1YGIFXluHySmUEhyLt1A+5acxemBQa6pM9+kwkfHPwA+R+9jUt9PS7p0wd49HB+2U6WvSktBla0wBOFG/2MNUvX4NENjyB0Zqhb+u++1I1f57+Cz0s+d0v/3gRj+KhoT9ltbNW9S2/lDP/Qkifydq3T6fDde/4Td6z2TCGpvxf+HTvffRVWq1UT318lfaV/ZkCkxDlbADGsODPhFAFSAJ55YBuWL17usWvevvp2RIdH4adv/AxC9tu/y+mBPabluoSU6M2yLNvuvixk2w5c0so0ZxzbvvM0VqZ6fsdaQkwi5sYnoeCLAlhlq13x+pzm+IIzgevHvUOEYjbdsRnZ6dmqXT9nSQ423bFZteurDQdSOdfpbDWcAY09q/civXDuQmy8dQPUZuNtG5A2P82mtXJ/PKGFYIs5gJnj3hnCbjjjeGLjY+DcpeW2HY7l4W89BM7Uj0UFoiSr1TrinSdDvx5J26/XLF2D5ATtVEdLTkhGzpIcFJYUauL+eEozhjAJlKGd5u6b1jnc1thjxL4D+3BEfxQXWi8AABJjE7Ey5Uasu2kdwkLCHI6psKTQ4bi8ESEQLkn0HkCn9OzYRCy+bjEc4eDJg9ix6yX09feNOF7TUIOahhr85bN92LrlB8jNyFXcd+q8VMRFxqHd2K7o+3i5nuaXRsuVZC5aBsaUP2Q9ePIgfvHmL8cM5uH09ffh2d//wqEngYwxLLthmeJ23o6kJQ/kjXpRsvIy2cYeI3bsegnCjgdaQgjs2LUD6fPSMStE2Vs/Uuen4sPCD0ccU/t+uVtThnaSpHjlG+T3Hdg3aWYeTe+VPrxfsE/xda6Nm6O4jbfDtTSP6I06JjwGSikuO6q8jV55m5jwGNXvj6c1ZWgnmT5thuI2ze1Nits0tSpvM2N6kOI23g55aGe1bEEAJCiBObBS14HfnbBYzerfH/LQ3kVXT5fiNvHRykufxEcrf+mq0Q93tZCHdlIbuw1QSpYDq/Gy0pS3MXQbVL8/5KG9jKrzVYrbrLtpHYKm2e9vg2cE4+61dyu+TlW98ti8HW6xWkb4ENLKdFm1HkoJCwnD1i0/sOuBDGMM/7Vpq0PbuPRnylW/P57WlKGd5NSZU2N+mNhDbkYutj3wNIInmYkInhGMnz7wDFZlrFLcv8VqQWlNqeJ23o405D+G/lJIK9O9fb04cfokbkxZAaXkZuQifV463i/YhyP6Y2hsbQQAJMYkYmXajbh77d0Ob7A9XnEcXT1dqt8fj2t7bxAxMZ8c+cShAQ0As0JmYcud92HLnfe5NKZ/HvmXS/vzFmge2gW68FQhWjpaEBcZBy3QamjFEX0xAG3cH09q8tAuwGK14N1//q/aYdjI/0c+zBblvt4XoHloF+mPij9Cm6EVatNmbMOnxz6zaa3cH09pytAuwmw243f/94baYeD3f3kTZotZ7TBUg2XnpfltZRJ3sOOJHUgftuvak5TXlOPxl56wa521r0IZ2sXsfPsVmMwmj1/XZDbh5fyX/XowA+ShXa4vtDbhTx/+CZ7mrb++hfrm86p/f7U1ZWg3sO+z91Fa7bmndGVnyvCXT5XvaPFFyEO7ifDQcPz2R68hOizardfp7OrEd//7e+gwdrj1Ot4CZWg3Yeg24Gdv/Bxms/tmHCxWC37+5rM0mIdBHtqNurK2Eq+8sxPuYufbr6KytlIz31cLmjK0m/nk6CfYX7Tf5f1+WPihW/r1dshDe4AAScIvH34OSxdkuKS/k1Ul+Mlvfuy3j7cngzK0BzBbLHjmtW0oP1vhdF+VdVXY/vp2GswTQB7aQ/qKuR8/ee1pnLtwDo5S31SPba9vg8ly9cGNVr6fVjRlaA/Se/kStr3+DFo6WhS3bTO04ke/+TF6euk1bpNBHloFrom+Bi889gJiI+yrutTV24Xv/+oRNLUpLzbjb1CGVoGmtiY8/uLjaBysBz0ZVyz9qOmohcwo79gDeWiVdKuhFY/veBx1F+owEX3myyhvPo1+qwnJc5I1Fb9WNWVoFTF0G/DUqz9EZd3Y+hmX+i+hovnLET8AiakhD60BAgMC8eSWJ7E2cw0AoLPXgDNtNbAOvn9PCOD1P/0GLa3Kf0z6G9LUpxDuxmQ24bk/PIfOrk4kxCXAMk0G4wNFaGRZxqeHPqHBbCcsd9NSAWiorgJpREVEYk7CQCH18xfq0d7Zoan4NK1BaI72zg60tF0EcPUvjLAP8tCET0GzHIRPQfPQpH1Lg9A0keGRmJOYBKtsRX1DHbq6/a8qvxLIQ2uYnOWrkLNiNTgfcIayLKPoWCGKjh9SOTLtQh5ao8RGxWL1ylzbYAYAzjlWr8xFbFSsipFpG/LQGtVJc+YCYGCMjaj0zxjH3GuvUz0+rWrK0BrF3ysgOQrVh9aormuoAyAwelwLIeNsfY3q8WlVU4bWKK3tF3GwuACyLNuOybKMg4cL0NauftlerUJrOTSuYyJjMSdxDqyyFecb69HV3aWp+DSnQWiaTmMHOo1jFycR40Pz0IRPQR6a8CloHpq0b2kQmiEyPBJJiXMBAHWNtegwUFVRpZCH1ggrM7OwMjMHusGtV1ZZ4MiJIhw5UaxyZN4FeWgNEBMVg+xlVwczAOg4Q/ayHMRE2VeMhhiA3vXtRh0RFoGkxCQAQF1jHTqNneOen5Q417Zeg2HgvwICjDEkzZ6LTkOnJr6PV2gQbmHFkhW4cWkWdFwHAMiRrTh6shgn9SfHnszGHiIcg9ZyuEFHR8RgZWY2GGMQGPiJwjnHysxs1J6vQ1tn64jza8+fw6oVq0ecDwwsUKqtrx1xDS18Py1r8tBuIDEhccSSzyEYY5idMHvM8baONhQdPwSrfHUwW2WBQ8cKRwx+YmrIQ9upZ84MQULcNdBxHZpamtBuaJ/w/CGbAYz0xMBAppZ00pj+j548gupz1Zg7e2DarrahFoYJPDdp8tBOkZGyFBmpGWCMD9gCIeP4qeM4qT8x7vkNTQ0QQozJ0kIINDY1THgdg7ETPT3dAMb+U0rYB81DT0FkeBTuuf0eYLSFEALv/f09dAxm6tEsS1+BrMysEfsBi08cxhelx90dsl9DGXoKEuMSxg5mAGAMCfEJEw7oL0qP4Wz9GSTGzwEANDafh8FocGeoBMhDT6m5bshmDPxDNmQjhvRk7Q1GA3p6ejT1fXxd0yzHFDS1NGHMPigAEAIXmhs9HxAxKeSh7SAjZSmWL1kOxgb+/xdCxvGSYyipKFE5MmI05KHtoKT8JGrPn8M1cQkAgKaWCzBSBSNNQh7aTm3sNsLYbbRp2w3USHykaR4as0JmITE+EQDQ2NyIrp4ulSMinMVvPXT6DelIX5wxYtaitKIEpV+WqhwZ4Qx+OcsRERaB9JSlo0psMaSnLEVEWISKkRHO4pd7ChPjE20rNjlj4La1yEBCfKLq8ZF2XPtlhvZLj+Un+KWHjggLxx1fXTdmXb0A8LePP4Chq1ONsAgX4JcZutNoQIn+xIgKn0IIlJSdoMHs5fjtPLT+dBnqG+uQGD+w4L6xuQHdPd2aiY80zUMrprunG9V9A+/ZHrohhHfjlx6a8F380kMTvotfzkOT9l1NGZrwKfzGQ4eGhCI2Kg4AcLG9Bd2Dm1EJ38IvZjkWL0hBysLUEQuRyiv1qKgqVzkywtX4vIeOCo9C+g1LbIOZMw4d1yF1YTrCZoWrHh9p8tCKiIme4K2rTCAuOs6zwRBux+dr28myDFkMezXasD9rIT7SrtU+n6EvtrUAYpy6GoKhpbXZ8wERbsXnPXTPpR6UV+ltC5H44M7tstOnbHsEtRQvaSc1/IDKM1/ifGMdYqPjoOM6XGxvgaGLqhj5In4zD034Bz7voQn/wuc9NGn/0pShCZ/CZzx0yMwQREdGAxh4xUPPpR6VIyLUwCdmORbOW4SF8xaCDRYXF7KMyppKVNacVjkywtN4vYeODI/E4gUptsHMGYdOJ2HR9TdgVugs1eMjTR5aEdERE79pNSaS3sLqb3j9Wg6rbKG1GqRteH2Gbu2Y+D1+F9svejASQgtwSZL6teSBlOre3l5UnTkNIQ9k5qG1GhVV5bY6G1qKl7Rbdb/EBDMKiAkWDXsH1eeqcb65ATGR0dBxHdo62mHsprUafkgPy85LqwJwvdqREISzCKCWM6BN7UAIwhVwoEeSeMBpwUSOVmqTzQoJQ2R4BKyyFe2GDvRfuaJqPKS9RwuIFklwlGulYPK8pPmYn3w9OOOQxcDWqbr6Wpytr1E7NMIbYKhiq+5dslaW5QNqxxIaEoqc5avH/azoeCHV0SCmRDDxMLf2zzgK4LLawUSGRzn0GUEMIQSqePHe4suSTndo6KDa84qccdtc8pDWcZ1q8ZD2Gi3LkrlkcOTwj6EyHZ3t43/AgHbDBJ8RxFVKj+2q7GAAkHXv4nlM1lUDY1474lGSr52H+cnzbRlaFjLOnKvGufqzaoZFeAMCOw6/XbbVNoCz89IKAKxRL6IBgoOCERkeCQDoMHSgt69X5YgIb4BB3F6Ur99vMyMCeIsBa9SeV+zv70dTS5Mm5jVJe4dmDF2my9MOAMNW25lmBrwHwAiC8DZktrd4b/FlYJRnzs5LfxYQT6sTFUE4BuPILdpdVgiMWg8tzJaXAdDuUsKLYDVFu8ts084jBnTx3orOQCngtxqZVyRNemot6V7EsLddj9mx0ofeFxhYx+jjBKFBGoPbuv84/MC4887ZG1MfgGBveCQkgnCcRw/nl+0cfmDcPYWH5+v/AOCIR0IiCMc4GxjYPSbpjr9JdjtkIbPvATCr7pFIkx5HM4hHCv5YdwWjmHDXd/E7pSVgNIVHaA8m8H5Rvn7/uJ9N2nI7eE512scCuMUtkRGEcgySLKd//k55w3gfTl6XYztkzgM2A6ACF4QWEIC4f6LBDNhRaKZw94nmAMbvBNAHaMdDkfY/LcB+fThf/wEmwa7KSQf3nDouIO4DIE91LkG4BYHCbrPlh1Odpmj9c/bG1Cch2K8cj4ogHECgnDOReyhfP2X1IN1UJwynQd9aNDs15grA6Eci4SkaeYD15kO7y+36HadoQAMDgzo5I8Esy/LNwIDH4Zzbqn6SJu1CfX4aD/y3z/9ceg524lD10YO7Tj7HIJ4AeWrCXQiUC4llH9j9RZWSZk7tIVy1Ie1OmWEPgBBn+iGIEQgUcibussczj8ap+tCH3i77G3TIFkCtM/0QxCACwM4ui/UWRwYz4KJd3lnfXBzBAnS/BfCtoTlDLe05I+0V2gCI+6eaZ54Kl1TwL95b0Xk4v2w9gA1grNMVfRL+AxN4X5LldGcHM+CGOhw56zOuEVx+HhB57uif8CnOMohHJlpo5AhuG3A561OWCc5fhAZqfRCao1EAL04L7P7deEtAncHtGTR305J/B9hjFqv1FgBMQ56NtMc1q5Ek3Ysdl/v/p2JvhQluQJr6FOf4/M+n9gPYn7UhdSFn/GEAGwGEufu6hGYwMsHeYxy7inaXHgLcW43c4x4388HMgIBLpjWc4esQ7OsArvV0DIRbkQGUAuIAAz4NCOz5zNW2YjJU/9G2avPiOTDr0mUgjTGWLiBmAwhjDGFCIAzAdLVjJEZgAnAJgBGC9YDJFwV4NZhcKQSqZMlccmxXpWpVA/4fqlLAiyehJXUAAAAASUVORK5CYII=">
+
+<!-- iOS "Add to Home Screen" icon (no chrome, full bleed) -->
+<link rel="apple-touch-icon" sizes="180x180"
+      href="data:image/png;base64,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">
+
+<!-- iOS standalone app title (shown under the icon on home screen) -->
+<meta name="apple-mobile-web-app-title" content="{{SITE_TITLE}}">
+
+  <title>{{SITE_TITLE}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --bark:       #3d2b1f;
+      --bark-mid:   #6b4c38;
+      --bark-light: #9a7055;
+      --moss:       #3a5a2e;
+      --moss-mid:   #527844;
+      --sage:       #8aab7a;
+      --sage-pale:  #cddfc4;
+      --cream:      #f6f1e9;
+      --cream-dark: #ede5d4;
+      --stone:      #a09285;
+      --ink:        #1e1712;
+      --map-bg:     #e8f0df;
+      --shadow:     rgba(61,43,31,0.10);
+
+      /* Year accent palette */
+      --c-2025: #3a5a2e;
+      --c-2024: #6b4c38;
+      --c-2023: #4a6c3a;
+      --c-2022: #4a5c72;
+      --c-2021: #725a4a;
+      --c-2020: #5a4a72;
+    }
+
+    body {
+      background: var(--cream);
+      font-family: 'DM Mono', monospace;
+      color: var(--ink);
+      max-width: 430px;
+      margin: 0 auto;
+      padding-bottom: 300px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .journal-header {
+      background: var(--bark);
+      padding: 22px 20px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .journal-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--cream);
+      letter-spacing: 0.01em;
+      line-height: 1;
+    }
+    .journal-header .sub {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-top: 5px;
+    }
+
+    /* ── LOADING / ERROR STATES ── */
+    .state-msg {
+      text-align: center;
+      padding: 60px 24px;
+      font-size: 12px;
+      color: var(--stone);
+      letter-spacing: 0.08em;
+    }
+    .state-msg .icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 14px;
+      opacity: 0.5;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--cream-dark);
+      border-top-color: var(--moss);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── YEAR SECTION ── */
+    .year-section { padding-top: 6px; }
+    .year-bar {
+      display: flex;
+      align-items: center;
+      padding: 18px 16px 10px;
+      gap: 14px;
+    }
+    .year-bar .yr {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-style: italic;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .year-bar .rule {
+      flex: 1;
+      height: 1.5px;
+      border-radius: 1px;
+      opacity: 0.18;
+    }
+    .year-bar .count {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      white-space: nowrap;
+    }
+
+    /* ── HIKE CARD ── */
+    .hike-card {
+      margin: 0 12px 14px;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 14px var(--shadow), 0 1px 3px var(--shadow);
+      animation: fadeUp 0.35s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card header */
+    .card-header {
+      display: flex;
+      align-items: stretch;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .date-block {
+      min-width: 58px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 10px;
+      flex-shrink: 0;
+      color: #fff;
+    }
+    .date-block .mo {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+    .date-block .dy {
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1.05;
+      margin: 1px 0;
+    }
+    .date-block .yr-sm {
+      font-size: 9px;
+      opacity: 0.65;
+    }
+    .card-meta {
+      flex: 1;
+      padding: 15px 10px 15px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+    .trail-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--bark);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .trail-place {
+      font-size: 10px;
+      color: var(--stone);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chev {
+      align-self: center;
+      margin-right: 16px;
+      color: var(--sage-pale);
+      font-size: 20px;
+      transition: transform 0.28s ease;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .hike-card.open .chev { transform: rotate(180deg); }
+
+    /* Card body */
+    .card-body {
+      display: none;
+      border-top: 1px solid var(--cream-dark);
+    }
+    .hike-card.open .card-body { display: block; }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .stat {
+      padding: 13px 8px 11px;
+      text-align: center;
+      border-right: 1px solid var(--cream-dark);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--bark);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .stat-lbl {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-top: 4px;
+    }
+
+    /* ── GALLERY ── */
+    .gallery-wrap {
+      position: relative;
+      overflow: hidden;
+      background: #111;
+      aspect-ratio: 4/3;           /* fallback if no photo data */
+      border-top: 1px solid var(--cream-dark);
+      touch-action: pan-y;
+      transition: aspect-ratio 0.32s ease;  /* Chrome 117+; instant on older */
+    }
+    .gallery-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94);
+      will-change: transform;
+    }
+    .gallery-slide {
+      min-width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+    }
+    .gallery-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      transition: all 0.22s;
+      cursor: pointer;
+    }
+    .dot.active {
+      background: #fff;
+      width: 18px;
+      border-radius: 3px;
+    }
+    /* Single photo — hide dots */
+    .gallery-wrap[data-count="1"] .gallery-dots { display: none; }
+
+    /* ── GALLERY ARROWS (pointer devices only) ── */
+    @media (hover: hover) {
+      .gallery-arrow {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        z-index: 10;
+      }
+      .gallery-arrow.prev { left: 0; }
+      .gallery-arrow.next { right: 0; }
+      .gallery-arrow::after {
+        content: '';
+        width: 32px;
+        height: 32px;
+        background: rgba(0,0,0,0.45);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+      .gallery-arrow .arrow-icon {
+        position: absolute;
+        color: #fff;
+        font-size: 16px;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .gallery-wrap:hover .gallery-arrow:not(.hidden) { opacity: 1; }
+      .gallery-arrow.hidden { opacity: 0 !important; pointer-events: none; }
+    }
+    /* On touch-only devices arrows are never rendered */
+    @media (hover: none) {
+      .gallery-arrow { display: none; }
+    }
+
+    /* ── NOTES ── */
+    .notes-block {
+      padding: 16px 18px 18px;
+      border-top: 1px solid var(--cream-dark);
+    }
+    .notes-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .notes-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--cream-dark);
+    }
+    .notes-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.72;
+      color: var(--bark-mid);
+    }
+
+    /* ── MAP ── */
+    .map-block {
+      border-top: 1px solid var(--cream-dark);
+      background: var(--map-bg);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      position: relative;
+    }
+    .map-block img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .map-label {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--bark);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Edit button inside card */
+    .edit-btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 0 16px 16px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--cream-dark);
+      border-radius: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--stone);
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .edit-btn:active { border-color: var(--moss); color: var(--moss); }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed;
+      bottom: 26px;
+      right: 22px;
+      width: 58px;
+      height: 58px;
+      background: var(--moss);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 300;
+      box-shadow: 0 4px 18px rgba(58,90,46,0.42);
+      text-decoration: none;
+      z-index: 300;
+      transition: transform 0.15s, box-shadow 0.15s;
+      line-height: 1;
+      padding-bottom: 2px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fab:active {
+      transform: scale(0.93);
+      box-shadow: 0 2px 8px rgba(58,90,46,0.35);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="journal-header">
+    <h1>{{SITE_TITLE}}</h1>
+    <div class="sub">{{SITE_SUBTITLE}}</div>
+  </header>
+
+  <main id="journal">
+    <div class="state-msg" id="loading">
+      <div class="spinner"></div>
+      Loading journal…
+    </div>
+  </main>
+
+  <a class="fab" href="add.html" title="Log a new hike">+</a>
+
+  <script>
+    // ── CONFIG ──────────────────────────────────────────────────────────────
+    const GITHUB_USER  = '{{GITHUB_USER}}';
+    const GITHUB_REPO  = '{{GITHUB_REPO}}';
+    const GITHUB_BRANCH = 'main';
+    const DATA_FILE    = 'hikes.json';
+
+    // Base URL for raw assets (images)
+    const ASSET_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/`;
+
+    // ── MONTHS ──────────────────────────────────────────────────────────────
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // ── YEAR COLORS ─────────────────────────────────────────────────────────
+    // Cycles from 2012 forward — works for any year, forever.
+    const YEAR_PALETTE = [
+      '#3a5a2e', // moss green
+      '#6b4c38', // bark brown
+      '#4a6c3a', // fern
+      '#4a5c72', // slate blue
+      '#725a4a', // clay
+      '#5a4a72', // dusk purple
+      '#3d6b5a', // pine teal
+      '#7a5a2e', // amber bark
+      '#5a6e3a', // olive
+      '#6b3a4a', // mulberry
+    ];
+    function yearColor(y) {
+      const idx = ((y - 2012) % YEAR_PALETTE.length + YEAR_PALETTE.length) % YEAR_PALETTE.length;
+      return YEAR_PALETTE[idx];
+    }
+
+    // ── FORMAT HELPERS ───────────────────────────────────────────────────────
+    function fmtMiles(n)    { return n % 1 === 0 ? n.toFixed(1) : n.toString(); }
+    function fmtElev(n)     { return n >= 1000 ? (n/1000).toFixed(1) + 'k' : n.toString(); }
+    function fmtDuration(m) {
+      if (!m) return '—';
+      const h = Math.floor(m / 60);
+      const min = m % 60;
+      if (min === 0) return `${h} hr`;
+      return `${h}h ${min}m`;
+    }
+
+    // ── TOUCH SWIPE STATE ────────────────────────────────────────────────────
+    const touchOrigin = {};
+
+    function galleryTouchStart(e, uid) {
+      touchOrigin[uid] = e.touches[0].clientX;
+    }
+    function galleryTouchEnd(e, uid) {
+      const start = touchOrigin[uid];
+      if (start == null) return;
+      const diff = start - e.changedTouches[0].clientX;
+      touchOrigin[uid] = null;
+      if (Math.abs(diff) < 40) return;
+      const wrap  = document.getElementById('gal-' + uid);
+      const count = parseInt(wrap.dataset.count);
+      let   idx   = parseInt(wrap.dataset.idx);
+      if (diff > 0 && idx < count - 1) idx++;
+      else if (diff < 0 && idx > 0)    idx--;
+      goToSlide(uid, idx);
+    }
+    function goToSlide(uid, idx) {
+      const wrap  = document.getElementById('gal-' + uid);
+      const track = document.getElementById('trk-' + uid);
+      const count = parseInt(wrap.dataset.count);
+      wrap.dataset.idx = idx;
+      track.style.transform = `translateX(${-idx * 100}%)`;
+      wrap.querySelectorAll('.dot').forEach((d, i) =>
+        d.classList.toggle('active', i === idx)
+      );
+      // Morph the container to match this photo's aspect ratio
+      const slide = track.querySelectorAll('.gallery-slide')[idx];
+      const ratio = slide?.dataset.ratio;
+      if (ratio) wrap.style.aspectRatio = ratio;
+      // Show/hide arrows based on position
+      const prev = wrap.querySelector('.gallery-arrow.prev');
+      const next = wrap.querySelector('.gallery-arrow.next');
+      if (prev) prev.classList.toggle('hidden', idx === 0);
+      if (next) next.classList.toggle('hidden', idx === count - 1);
+    }
+
+    // ── CARD TOGGLE ──────────────────────────────────────────────────────────
+    function toggleCard(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // ── BUILD CARD HTML ──────────────────────────────────────────────────────
+    function buildCard(hike, color) {
+      const uid   = hike.id;
+      const date  = new Date(hike.date + 'T12:00:00');
+      const mo    = MONTHS[date.getMonth()];
+      const dy    = date.getDate();
+      const yr    = date.getFullYear();
+
+      const miles = hike.stats?.miles    != null ? fmtMiles(hike.stats.miles)         : '—';
+      const elev  = hike.stats?.elevation_gain != null ? fmtElev(hike.stats.elevation_gain) + ' ft' : '—';
+      const dur   = hike.stats?.duration_minutes != null ? fmtDuration(hike.stats.duration_minutes) : '—';
+
+      const photos = (hike.photos || []).map(p => {
+        const src = ASSET_BASE + (typeof p === 'string' ? p : p.src);
+        const ratio = typeof p === 'object' && p.aspect_ratio ? p.aspect_ratio : null;
+        return { src, ratio };
+      });
+      const mapSrc  = hike.map ? ASSET_BASE + hike.map : null;
+      const count   = photos.length;
+
+      // Gallery slides — embed data-ratio so goToSlide can morph the container
+      const slides = photos.map((p, i) =>
+        `<img class="gallery-slide"${p.ratio ? ` data-ratio="${p.ratio}"` : ''} src="${p.src}" alt="Photo ${i+1} — ${hike.trail}" loading="lazy">`
+      ).join('');
+
+      // Initial aspect-ratio style from first photo (falls back to CSS 4/3)
+      const firstRatio = photos[0]?.ratio;
+      const wrapStyle  = firstRatio ? ` style="aspect-ratio:${firstRatio}"` : '';
+
+      // Dots (only if >1 photo)
+      const dots = count > 1
+        ? `<div class="gallery-dots">${photos.map((_, i) =>
+            `<div class="dot${i===0?' active':''}" onclick="goToSlide('${uid}',${i})"></div>`
+          ).join('')}</div>`
+        : '';
+
+      // Arrows (only if >1 photo — hover devices will show them, touch devices CSS-hides them)
+      const arrows = count > 1 ? `
+        <button class="gallery-arrow prev hidden" onclick="goToSlide('${uid}', parseInt(document.getElementById('gal-${uid}').dataset.idx)-1)" aria-label="Previous photo">
+          <span class="arrow-icon">‹</span>
+        </button>
+        <button class="gallery-arrow next" onclick="goToSlide('${uid}', parseInt(document.getElementById('gal-${uid}').dataset.idx)+1)" aria-label="Next photo">
+          <span class="arrow-icon">›</span>
+        </button>` : '';
+
+      // Gallery block (only if photos exist)
+      const galleryBlock = count > 0 ? `
+        <div class="gallery-wrap"${wrapStyle}
+             id="gal-${uid}"
+             data-idx="0"
+             data-count="${count}"
+             ontouchstart="galleryTouchStart(event,'${uid}')"
+             ontouchend="galleryTouchEnd(event,'${uid}')">
+          <div class="gallery-track" id="trk-${uid}">${slides}</div>
+          ${arrows}
+          ${dots}
+        </div>` : '';
+
+      // Notes block (only if notes exist)
+      const notesBlock = hike.notes ? `
+        <div class="notes-block">
+          <div class="notes-eyebrow">Trail Notes</div>
+          <p class="notes-text">${hike.notes}</p>
+        </div>` : '';
+
+      // Map block (only if map exists)
+      const mapBlock = mapSrc ? `
+        <div class="map-block">
+          <img src="${mapSrc}" alt="Trail map — ${hike.trail}" loading="lazy">
+          <span class="map-label">${miles !== '—' ? miles + ' mi · ' : ''}${hike.location}</span>
+        </div>` : '';
+
+      return `
+        <article class="hike-card open" id="card-${uid}">
+          <div class="card-header" onclick="toggleCard('card-${uid}')">
+            <div class="date-block" style="background:${color}">
+              <span class="mo">${mo}</span>
+              <span class="dy">${dy}</span>
+              <span class="yr-sm">${yr}</span>
+            </div>
+            <div class="card-meta">
+              <div class="trail-name">${hike.trail}</div>
+              <div class="trail-place">${hike.location} · ${hike.state}</div>
+            </div>
+            <div class="chev">⌃</div>
+          </div>
+          <div class="card-body">
+            <div class="stats-row">
+              <div class="stat">
+                <div class="stat-val">${miles}</div>
+                <div class="stat-lbl">Miles</div>
+              </div>
+              <div class="stat">
+                <div class="stat-val">${elev}</div>
+                <div class="stat-lbl">Elev Gain</div>
+              </div>
+              <div class="stat">
+                <div class="stat-val">${dur}</div>
+                <div class="stat-lbl">Duration</div>
+              </div>
+            </div>
+            ${mapBlock}
+            ${notesBlock}
+            ${galleryBlock}
+            <a class="edit-btn" href="add.html?id=${uid}">Edit this hike</a>
+          </div>
+        </article>`;
+    }
+
+    // ── RENDER JOURNAL ───────────────────────────────────────────────────────
+    function render(hikes) {
+      const journal = document.getElementById('journal');
+      journal.innerHTML = '';
+
+      if (!hikes || hikes.length === 0) {
+        journal.innerHTML = `
+          <div class="state-msg">
+            <span class="icon">🌲</span>
+            No hikes yet. Tap + to log your first one.
+          </div>`;
+        return;
+      }
+
+      // Sort newest first
+      const sorted = [...hikes].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Group by year
+      const byYear = {};
+      for (const hike of sorted) {
+        const yr = new Date(hike.date + 'T12:00:00').getFullYear();
+        if (!byYear[yr]) byYear[yr] = [];
+        byYear[yr].push(hike);
+      }
+
+      const years = Object.keys(byYear).sort((a, b) => b - a);
+      let delay = 0;
+
+      for (const yr of years) {
+        const color  = yearColor(parseInt(yr));
+        const yrHikes = byYear[yr];
+        const label  = yrHikes.length === 1 ? '1 hike' : `${yrHikes.length} hikes`;
+
+        const section = document.createElement('section');
+        section.className = 'year-section';
+        section.innerHTML = `
+          <div class="year-bar">
+            <span class="yr" style="color:${color}">${yr}</span>
+            <div class="rule" style="background:${color}"></div>
+            <span class="count">${label}</span>
+          </div>
+          ${yrHikes.map(h => buildCard(h, color)).join('')}
+        `;
+        journal.appendChild(section);
+
+        // Stagger card animations
+        section.querySelectorAll('.hike-card').forEach(card => {
+          card.style.animationDelay = `${delay}ms`;
+          delay += 60;
+        });
+      }
+    }
+
+    // ── FETCH DATA ───────────────────────────────────────────────────────────
+    async function loadJournal() {
+      const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DATA_FILE}?t=${Date.now()}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        render(data.hikes);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('journal').innerHTML = `
+          <div class="state-msg">
+            <span class="icon">⚠️</span>
+            Couldn't load the journal.<br>Check your connection and try again.
+          </div>`;
+      }
+    }
+
+    loadJournal();
+  </script>
+</body>
+</html>

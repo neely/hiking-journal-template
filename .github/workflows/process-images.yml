@@ -1,0 +1,147 @@
+name: Process Staged Images
+
+on:
+  push:
+    paths:
+      - 'staging/**'
+
+# Ensures only one run happens at a time. Cancels older ones if you 
+# upload multiple photos in separate bursts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Pillow
+        run: pip install Pillow
+
+      - name: Sync with remote
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Grab latest hikes.json changes before Python starts deleting things
+          git pull --rebase origin main
+
+      - name: Resize and move images
+        run: |
+          python3 << 'EOF'
+          import os, re, sys, json
+          from pathlib import Path
+          from PIL import Image, ImageOps
+
+          STAGING_DIR = Path("staging")
+          ASSETS_DIR  = Path("assets/images")
+          HIKES_JSON  = Path("hikes.json")
+          LONG_EDGE   = 2000 
+
+          staged = [p for p in STAGING_DIR.rglob("*") if p.is_file() and p.name != ".gitkeep"]
+
+          if not staged:
+              print("Nothing to process.")
+              sys.exit(0)
+
+          # Track new photo metadata: { slug -> [ {src, aspect_ratio}, ... ] }
+          new_photos = {}
+
+          for src in staged:
+              parts = src.relative_to(STAGING_DIR).parts
+              if len(parts) != 2:
+                  continue
+
+              slug, filename = parts
+              stem = Path(filename).stem
+              
+              match = re.search(r'(\d{4})$', slug)
+              if not match:
+                  continue
+              year = match.group(1)
+
+              out_dir  = ASSETS_DIR / year / slug
+              out_dir.mkdir(parents=True, exist_ok=True)
+              out_path = out_dir / f"{stem}.webp"
+
+              try:
+                  with Image.open(src) as img:
+                      img = ImageOps.exif_transpose(img)
+                      img = img.convert("RGB")
+                      w, h = img.size
+                      if max(w, h) > LONG_EDGE:
+                          scale = LONG_EDGE / max(w, h)
+                          img = img.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
+
+                      img.save(
+                          out_path, 
+                          "WEBP", 
+                          quality=75, 
+                          method=6, 
+                          lossless=False,
+                          icc_profile=None,
+                          exif=b""
+                      )
+                      final_w, final_h = img.size
+                      aspect_ratio = round(final_w / final_h, 3)
+                      rel_path = str(out_path)
+                      if slug not in new_photos:
+                          new_photos[slug] = []
+                      new_photos[slug].append({"src": rel_path, "aspect_ratio": aspect_ratio})
+                      print(f"  ✓  {src}  →  {out_path} ({final_w}×{final_h}, ratio {aspect_ratio})")
+
+              except Exception as e:
+                  print(f"  ✗  Failed to process {src}: {e}")
+                  sys.exit(1)
+
+              src.unlink()
+
+          # Update hikes.json with aspect_ratio on matching photo entries
+          if new_photos and HIKES_JSON.exists():
+              data = json.loads(HIKES_JSON.read_text())
+              for hike in data.get("hikes", []):
+                  slug = hike.get("id", "")
+                  if slug not in new_photos:
+                      continue
+                  # Build a lookup: filename -> aspect_ratio
+                  ratio_map = {Path(p["src"]).name: p for p in new_photos[slug]}
+                  updated = []
+                  for entry in hike.get("photos", []):
+                      # entry may be a plain string path or already an object
+                      if isinstance(entry, str):
+                          fname = Path(entry).name
+                          if fname in ratio_map:
+                              updated.append({
+                                  "src": ratio_map[fname]["src"],
+                                  "aspect_ratio": ratio_map[fname]["aspect_ratio"]
+                              })
+                          else:
+                              updated.append(entry)
+                      else:
+                          updated.append(entry)
+                  hike["photos"] = updated
+              HIKES_JSON.write_text(json.dumps(data, indent=2))
+              print("Updated hikes.json with aspect ratios.")
+
+          print("Done.")
+          EOF
+
+      - name: Commit processed images
+        run: |
+          git add -A staging/ assets/ hikes.json
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+          else
+            git commit -m "chore: process staged images [skip ci]"
+            git push
+          fi
