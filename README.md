@@ -1,3 +1,5 @@
+<img src="trail_icon.png" width="72" alt="Hiking Journal icon">
+
 # {{SITE_TITLE}} — Hiking Journal Template
 
 A personal hiking journal template. Phone-first, static, serverless, and free to run. No database, no backend, no build step. The entire site is a handful of HTML files and a single JSON file.
