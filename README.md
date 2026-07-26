@@ -36,6 +36,7 @@ hiking-journal/
 ├── index.html              # The journal — reads and renders hikes.json
 ├── add.html                # Add or edit a hike — writes to hikes.json
 ├── hikes.json              # All hike data (the entire data layer)
+├── trail_icon.png           # Browser tab icon + iOS "Add to Home Screen" icon
 ├── assets/
 │   └── images/
 │       └── {year}/
@@ -46,6 +47,8 @@ hiking-journal/
     └── workflows/
         └── process-images.yml
 ```
+
+`trail_icon.png` is referenced by both HTML files as a real hosted file (`<link rel="icon">` and `<link rel="apple-touch-icon">`), not inlined as base64 — swap in your own 180×180 PNG and both files pick it up automatically. This is also the icon that shows up when someone adds the journal to their iPhone home screen.
 
 ---
 
