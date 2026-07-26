@@ -253,18 +253,18 @@ By default this template is public — anyone can view the journal, and only som
 3. **Also gate the `*.pages.dev` URL.** Every Cloudflare Pages project gets a free `your-project.pages.dev` subdomain in addition to your custom domain — and it's easy to forget that Access only protects what you've explicitly pointed it at. Add a second Access application (or extend the first) covering the `.pages.dev` domain too, or that URL is an open back door around the whole setup.
 4. **Test it:** an allow-listed email gets in via OTP; a random email is blocked; the journal loads and renders; adding/editing a hike still works.
 
-One tradeoff worth knowing: after saving a new hike, there's a short delay (usually well under a minute) before Cloudflare Pages redeploys and the change is visible — versus near-instant on the public/no-Access setup. For a personal or family journal that's a fine trade.
+Note: there's no added latency from any of this. The short delay after saving a new hike (waiting for a Cloudflare Pages redeploy before it's visible) already exists in the default setup above — it's a consequence of reading everything same-origin instead of from the public raw CDN, not something Access introduces. Going private and adding Access costs you nothing extra in speed; it only adds a login step.
 
 ### If you want zero delay and the PAT out of the browser entirely
 
-There's a further step beyond Access: a Cloudflare Worker that holds the PAT as a server-side secret and proxies every read and write, so the browser never sees the token and there's no redeploy wait. It's a real piece of infrastructure though — worth being clear-eyed about what it costs versus what it buys:
+There's a further step beyond Access: a Cloudflare Worker that holds the PAT as a server-side secret and proxies every read and write, so the browser never sees the token and there's no redeploy wait either. It's a real piece of infrastructure though — worth being clear-eyed about what it costs versus what it buys:
 
-| | Access only (above) | + Cloudflare Worker |
+| | Default (current) | + Cloudflare Worker |
 |---|---|---|
-| Setup | GitHub + Cloudflare dashboard config, no code | Write and deploy a Worker (`wrangler`), rewrite both HTML files' fetch/save logic, manage a Worker secret |
+| Setup | Already done — nothing extra | Write and deploy a Worker (`wrangler`), rewrite both HTML files' fetch/save logic, manage a Worker secret |
 | PAT location | Browser (password manager) | Never leaves the server |
 | Latency after saving a hike | Short Pages redeploy delay | Instant |
-| Ongoing maintenance | None — it's just config | A small service to keep working across Worker/Wrangler updates |
+| Ongoing maintenance | None | A small service to keep working across Worker/Wrangler updates |
 
-For most personal journals, Access alone covers the actual threat model (repo private, domain gated, PAT scoped to one repo and never public) — the Worker mainly buys convenience, not meaningfully more security. It's a reasonable next step only if the redeploy delay genuinely bothers you in daily use.
+For most personal journals, the current setup covers the actual threat model (repo private if you want it, domain gated, PAT scoped to one repo and never public) — the Worker mainly buys convenience, not meaningfully more security. It's a reasonable next step only if the redeploy delay genuinely bothers you in daily use.
 
