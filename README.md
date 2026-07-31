@@ -246,6 +246,7 @@ Upload a photo through `add.html` and confirm the Action runs successfully in th
 - **Manual photo reordering** in `add.html` — drag-and-drop on the staged photo list before upload, so you can choose the hero shot explicitly rather than relying on file picker order
 - **A `manifest.json`** to complete the PWA setup if you want the saved home screen icon to behave as a full standalone app
 - **Pagination or a search bar** on `index.html` once the journal grows large enough that scrolling becomes unwieldy
+- **Splitting the inline `<style>`/`<script>` blocks into external CSS/JS files.** This template deliberately keeps everything inline — a fresh fork doesn't yet have the duplication between `index.html` and `add.html` that would justify the extra files. Worth revisiting once you've customized both pages enough that you're maintaining the same design tokens or helper functions in two places; splitting them out also unlocks a few small wins (View Transitions between pages, dark mode via one shared stylesheet, a service worker for offline reading) that are more annoying to do consistently across duplicated inline blocks. Not a rewrite — a real example split is documented at [neely.github.io/patterns](https://neely.github.io/patterns/#what-splitting-cssjs-out-of-inline-html-unlocks) if useful as a reference.
 
 ---
 
@@ -254,22 +255,31 @@ Upload a photo through `add.html` and confirm the Action runs successfully in th
 By default this template is public — anyone can view the journal, and only someone with the PAT can add or edit entries. If you'd rather the whole thing be invite-only, here's the proven setup. **No code changes needed** — `index.html` already reads everything relative to its own domain, so this is entirely a config change on GitHub and Cloudflare.
 
 1. **Make the repo private** on GitHub (Settings → General → Danger Zone). Writes still go through `api.github.com` with your PAT, which works identically on a private repo — nothing changes there.
-2. **Set up a Cloudflare Access application** on your custom domain: Cloudflare dashboard → Zero Trust → Access → Applications → Add an application, pointed at your custom domain. Allow-list the specific emails who should have access; they'll get a one-time PIN by email to log in.
-3. **Also gate the `*.pages.dev` URL.** Every Cloudflare Pages project gets a free `your-project.pages.dev` subdomain in addition to your custom domain — and it's easy to forget that Access only protects what you've explicitly pointed it at. Add a second Access application (or extend the first) covering the `.pages.dev` domain too, or that URL is an open back door around the whole setup.
-4. **Test it:** an allow-listed email gets in via OTP; a random email is blocked; the journal loads and renders; adding/editing a hike still works.
+2. **Set up a Cloudflare Access application** on your custom domain: Cloudflare dashboard → Zero Trust → Access controls → Applications → Create new application → **Public DNS** (not "Self-hosted" — that label doesn't exist in the current dashboard), pointed at your custom domain. Add a policy: Action = Allow, Include = the specific emails who should have access. They'll get a one-time PIN by email to log in.
+3. **Also gate the `*.pages.dev` URL.** Every Cloudflare Pages project gets a free `your-project.pages.dev` subdomain in addition to your custom domain — and it's easy to forget that Access only protects what you've explicitly pointed it at. Add a second Access application, same type, covering the `.pages.dev` domain too, or that URL is an open back door around the whole setup.
+4. **Fix the home-screen icon before you test it, not after.** iOS fetches `trail_icon.png` for "Add to Home Screen" in a context that doesn't carry your Access login session — so without one more step, the icon fetch fails and iOS silently falls back to screenshotting whatever's on screen at that moment as your icon instead. Add a third Access application: Public DNS, path `trail_icon.png` on your custom domain, but this time the policy Action is **Bypass** (not Allow), Include = Everyone. This makes just that one file publicly fetchable with no login, while everything else on the domain stays exactly as gated as it was. This one's easy to miss because everything *else* about the app will look perfectly correct while it's broken — the site loads fine, data loads fine, only the home-screen icon is wrong, and it's not obvious why.
+5. **Test it:** an allow-listed email gets in via OTP; a random email is blocked; the journal loads and renders; adding/editing a hike still works; adding to your home screen shows the real icon.
 
 Note: there's no added latency from any of this. The short delay after saving a new hike (waiting for a Cloudflare Pages redeploy before it's visible) already exists in the default setup above — it's a consequence of reading everything same-origin instead of from the public raw CDN, not something Access introduces. Going private and adding Access costs you nothing extra in speed; it only adds a login step.
 
+### If you want read access for everyone but write access for just a few people
+
+Same mechanism as above, one more layer: Cloudflare evaluates the *most specific* matching path first, so a narrower Access app overrides a broader one for just that path.
+
+- Leave your whole-domain app from step 2 as the "read" policy (family/broad Include list).
+- Add a new Public DNS app scoped to path `add.html` on your custom domain, with a narrower policy (just you, or just a couple of people) — this is now the one that governs who can actually reach the edit form.
+- Add a matching app for whatever path your write API lives on if you've also done the Worker setup below (e.g. `api/contents/*`) — otherwise someone could be blocked from the *form* but still technically reach the raw write endpoint directly.
+
 ### If you want zero delay and the PAT out of the browser entirely
 
-There's a further step beyond Access: a Cloudflare Worker that holds the PAT as a server-side secret and proxies every read and write, so the browser never sees the token and there's no redeploy wait either. It's a real piece of infrastructure though — worth being clear-eyed about what it costs versus what it buys:
+There's a further step beyond Access: a Cloudflare Worker that holds the PAT as a server-side secret and proxies every read and write, so the browser never sees the token and there's no redeploy wait either. This isn't hypothetical — [neely/hiking-journal-proxy](https://github.com/neely/hiking-journal-proxy) is a real, working example of exactly this pattern you can reference directly. It's a real piece of infrastructure though — worth being clear-eyed about what it costs versus what it buys:
 
 | | Default (current) | + Cloudflare Worker |
 |---|---|---|
-| Setup | Already done — nothing extra | Write and deploy a Worker (`wrangler`), rewrite both HTML files' fetch/save logic, manage a Worker secret |
+| Setup | Already done — nothing extra | Write and deploy a Worker, rewrite both HTML files' fetch/save logic to call it instead of `api.github.com` directly, manage a Worker secret |
 | PAT location | Browser (password manager) | Never leaves the server |
 | Latency after saving a hike | Short Pages redeploy delay | Instant |
-| Ongoing maintenance | None | A small service to keep working across Worker/Wrangler updates |
+| Ongoing maintenance | None | A small service to keep working, on its own repo |
 
-For most personal journals, the current setup covers the actual threat model (repo private if you want it, domain gated, PAT scoped to one repo and never public) — the Worker mainly buys convenience, not meaningfully more security. It's a reasonable next step only if the redeploy delay genuinely bothers you in daily use.
+For most personal journals, the current setup covers the actual threat model (repo private if you want it, domain gated, PAT scoped to one repo and never public) — the Worker mainly buys convenience, not meaningfully more security. It's worth doing once you're *already* Access-gated (a Worker route can piggyback on an Access app you already have, no extra setup there) and the redeploy delay genuinely bothers you in daily use — not before.
 

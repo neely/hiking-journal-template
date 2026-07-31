@@ -14,6 +14,14 @@ concurrency:
 jobs:
   process:
     runs-on: ubuntu-latest
+    # Guards against this Action re-triggering itself (its own commit
+    # touches staging/ by deleting processed files) WITHOUT using a
+    # "[skip ci]"-style commit message flag. If you deploy via Cloudflare
+    # Pages, it independently scans commit messages for that same flag and
+    # will silently skip deploying this Action's commits — two unrelated
+    # systems colliding on one magic string. Checking the actor avoids
+    # that collision entirely.
+    if: github.actor != 'github-actions[bot]'
 
     steps:
       - name: Checkout repo
@@ -142,6 +150,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nothing to commit."
           else
-            git commit -m "chore: process staged images [skip ci]"
+            git commit -m "chore: process staged images"
             git push
           fi
